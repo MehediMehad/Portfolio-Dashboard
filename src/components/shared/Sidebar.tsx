@@ -10,14 +10,38 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import { logout } from "@/services/AuthService";
+import { protectedRoutes } from "@/constants";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Sidebar = () => {
   const path = usePathname();
-  console.log("😎", path);
+
+  const { user, setIsLoading } = useUser();
+
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleLogout = () => {
+    logout();
+    setIsLoading(true);
+
+    if (protectedRoutes.some((route) => pathname.match(route))) {
+      router.push("/login");
+    }
+  };
 
   return (
-    <aside className="w-64 bg-[#120b20] border-r border-[#2d1b4d] hidden md:block">
+    <aside className="w-64 bg-[#120b20] border-r border-[#2d1b4d] hidden max-h-screen sticky top-0 md:block">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2 text-[#a855f7]">
           <svg
@@ -123,13 +147,29 @@ const Sidebar = () => {
           <span className="text-gray-400 hover:text-white">View Site</span>
         </Link>
 
-        <Link
+        {/* <Link
           href="/"
           className="flex items-center gap-3 px-6 py-3 hover:bg-[#1a1025] transition-colors"
         >
           <LogOut size={18} />
           <span className="text-gray-400 hover:text-white">Logout</span>
-        </Link>
+        </Link> */}
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <h1>Log out</h1>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="bg-red-500 cursor-pointer"
+              onClick={handleLogout}
+            >
+              <LogOut />
+              <span>Log Out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
     </aside>
   );
