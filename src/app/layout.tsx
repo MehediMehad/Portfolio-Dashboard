@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/shared/Sidebar";
-import Navbar from "@/components/shared/Navbar";
+import Providers from "@/provider/UserProvider";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +32,10 @@ export default function RootLayout({
         <div className="min-h-screen bg-[#0f0a1a] flex">
           {/* <Sidebar /> */}
           <div className="flex-1 overflow-auto">
-            {/* <Navbar /> */}
-            <main className="p-6">{children}</main>
+            <Providers>
+              <Toaster richColors position="top-center" />
+              <div className="p-6">{children}</div>
+            </Providers>
           </div>
         </div>
       </body>

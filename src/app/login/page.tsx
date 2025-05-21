@@ -1,47 +1,55 @@
 "use client";
-
 import type React from "react";
-
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Loader2 } from "lucide-react";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from "@/validation/login";
+import { toast } from "sonner";
+import { useUser } from "@/context/UserContext";
+import { loginUser } from "@/services/AuthService";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const form = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const { setIsLoading } = useUser();
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirectPath");
+  const router = useRouter();
 
-    // Basic validation
-    if (!email || !password) {
-      setError("Please enter both email and password");
-      return;
-    }
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting },
+  } = form;
 
-    setIsLoading(true);
-
+  const onSubmit: SubmitHandler<FieldValues> = async (data) => {
     try {
-      // Simulate API call for authentication
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // For demo purposes, hardcoded credentials
-      if (email === "admin@example.com" && password === "password") {
-        // Successful login
-        router.push("/dashboard");
+      setError(null);
+      setIsLoading(true);
+      const res = await loginUser(data);
+      if (res?.success) {
+        toast.success(res.message);
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push("/");
+        }
       } else {
-        setError("Invalid email or password");
+        setError(res.message || "Login failed. Please try again.");
+        toast.error(res.message || "Something went wrong!");
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
-      console.error("Login error:", err);
+    } catch (err: any) {
+      setError("An unexpected error occurred.");
+      toast.error("An unexpected error occurred!");
+      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -100,7 +108,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-6">
               <label
                 htmlFor="email"
@@ -113,13 +121,17 @@ export default function LoginPage() {
                 <input
                   id="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register("email")}
                   className="w-full bg-[#1a1025] border border-[#2d1b4d] rounded-lg pl-10 pr-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors"
                   placeholder="your@email.com"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                 />
               </div>
+              {form.formState.errors.email && (
+                <p className="mt-1 text-red-400 text-sm">
+                  {form.formState.errors.email.message as string}
+                </p>
+              )}
             </div>
 
             <div className="mb-6">
@@ -142,11 +154,10 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password")}
                   className="w-full bg-[#1a1025] border border-[#2d1b4d] rounded-lg pl-10 pr-10 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors"
                   placeholder="••••••••"
-                  disabled={isLoading}
+                  disabled={isSubmitting}
                 />
                 <button
                   type="button"
@@ -161,16 +172,20 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {form.formState.errors.password && (
+                <p className="mt-1 text-red-400 text-sm">
+                  {form.formState.errors.password.message as string}
+                </p>
+              )}
             </div>
-
+            {/* 
             <div className="flex items-center mb-6">
               <input
                 id="remember-me"
                 type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+                {...register("rememberMe")}
                 className="h-4 w-4 rounded border-[#2d1b4d] bg-[#1a1025] text-[#a855f7] focus:ring-[#a855f7] focus:ring-offset-[#120b20]"
-                disabled={isLoading}
+                disabled={isSubmitting}
               />
               <label
                 htmlFor="remember-me"
@@ -178,14 +193,14 @@ export default function LoginPage() {
               >
                 Remember me
               </label>
-            </div>
+            </div> */}
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full bg-[#a855f7] hover:bg-[#9333ea] text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
             >
-              {isLoading ? (
+              {isSubmitting ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
