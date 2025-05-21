@@ -5,7 +5,6 @@ import {
   MongoIcon,
   NextIcon,
   NodeIcon,
-  PhpIcon,
   ReactIcon,
   TailwindIcon,
 } from "../homeComponents/Icons";

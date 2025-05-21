@@ -1,7 +1,6 @@
 import Link from "next/link";
 import ProjectCard from "../../ui/card/ProjectCard";
 import { TProject } from "@/types/projects";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 const ProjectsSection = ({ projects }: { projects: TProject[] }) => {

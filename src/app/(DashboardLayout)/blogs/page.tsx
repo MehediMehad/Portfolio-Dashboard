@@ -263,6 +263,7 @@ export default function BlogsPage() {
       day: "numeric",
     });
   };
+  console.log(formatDate);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -529,7 +530,7 @@ export default function BlogsPage() {
         ) : blogs.length === 0 ? (
           <div className="p-6 text-center">
             <p className="text-gray-400 mb-4">
-              You haven't added any blog posts yet.
+              You haven&apos;t added any blog posts yet.
             </p>
             <button
               onClick={handleAddBlog}

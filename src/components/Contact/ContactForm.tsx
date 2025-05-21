@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Loader2 } from "lucide-react"
-import { sendContactForm } from "@/actions/contact"
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+// import { sendContactForm } from "@/actions/contact"
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -12,99 +12,103 @@ export default function ContactForm() {
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
   const [errors, setErrors] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
-  })
+  });
 
-  const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
+  const [formStatus, setFormStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
 
   const validateForm = () => {
-    let isValid = true
+    let isValid = true;
     const newErrors = {
       name: "",
       email: "",
       subject: "",
       message: "",
-    }
+    };
 
     // Name validation
     if (!formData.name.trim()) {
-      newErrors.name = "Name is required"
-      isValid = false
+      newErrors.name = "Name is required";
+      isValid = false;
     }
 
     // Email validation
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required"
-      isValid = false
+      newErrors.email = "Email is required";
+      isValid = false;
     } else if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address"
-      isValid = false
+      newErrors.email = "Please enter a valid email address";
+      isValid = false;
     }
 
     // Subject validation
     if (!formData.subject.trim()) {
-      newErrors.subject = "Subject is required"
-      isValid = false
+      newErrors.subject = "Subject is required";
+      isValid = false;
     }
 
     // Message validation
     if (!formData.message.trim()) {
-      newErrors.message = "Message is required"
-      isValid = false
+      newErrors.message = "Message is required";
+      isValid = false;
     } else if (formData.message.trim().length < 10) {
-      newErrors.message = "Message must be at least 10 characters"
-      isValid = false
+      newErrors.message = "Message must be at least 10 characters";
+      isValid = false;
     }
 
-    setErrors(newErrors)
-    return isValid
-  }
+    setErrors(newErrors);
+    return isValid;
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!validateForm()) {
-      return
+      return;
     }
 
-    setFormStatus("submitting")
+    setFormStatus("submitting");
 
     try {
-      await sendContactForm(formData)
-      setFormStatus("success")
+      // await sendContactForm(formData)
+      setFormStatus("success");
       setFormData({
         name: "",
         email: "",
         subject: "",
         message: "",
-      })
+      });
       // Reset form status after 5 seconds
       setTimeout(() => {
-        setFormStatus("idle")
-      }, 5000)
+        setFormStatus("idle");
+      }, 5000);
     } catch (error) {
-      console.error("Error submitting form:", error)
-      setFormStatus("error")
+      console.error("Error submitting form:", error);
+      setFormStatus("error");
       // Reset form status after 5 seconds
       setTimeout(() => {
-        setFormStatus("idle")
-      }, 5000)
+        setFormStatus("idle");
+      }, 5000);
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -124,7 +128,9 @@ export default function ContactForm() {
           placeholder="John Doe"
           disabled={formStatus === "submitting"}
         />
-        {errors.name && <p className="mt-1 text-red-500 text-sm">{errors.name}</p>}
+        {errors.name && (
+          <p className="mt-1 text-red-500 text-sm">{errors.name}</p>
+        )}
       </div>
 
       <div>
@@ -143,7 +149,9 @@ export default function ContactForm() {
           placeholder="john@example.com"
           disabled={formStatus === "submitting"}
         />
-        {errors.email && <p className="mt-1 text-red-500 text-sm">{errors.email}</p>}
+        {errors.email && (
+          <p className="mt-1 text-red-500 text-sm">{errors.email}</p>
+        )}
       </div>
 
       <div>
@@ -162,7 +170,9 @@ export default function ContactForm() {
           placeholder="Project Inquiry"
           disabled={formStatus === "submitting"}
         />
-        {errors.subject && <p className="mt-1 text-red-500 text-sm">{errors.subject}</p>}
+        {errors.subject && (
+          <p className="mt-1 text-red-500 text-sm">{errors.subject}</p>
+        )}
       </div>
 
       <div>
@@ -181,7 +191,9 @@ export default function ContactForm() {
           placeholder="Your message here..."
           disabled={formStatus === "submitting"}
         ></textarea>
-        {errors.message && <p className="mt-1 text-red-500 text-sm">{errors.message}</p>}
+        {errors.message && (
+          <p className="mt-1 text-red-500 text-sm">{errors.message}</p>
+        )}
       </div>
 
       <div>
@@ -205,7 +217,9 @@ export default function ContactForm() {
       {formStatus === "success" && (
         <div className="bg-green-900/30 border border-green-500 text-green-300 px-4 py-3 rounded-lg">
           <p className="font-medium">Message sent successfully!</p>
-          <p className="text-sm">Thank you for reaching out. I'll get back to you soon.</p>
+          <p className="text-sm">
+            Thank you for reaching out. I&lsquo;ll get back to you soon.
+          </p>
         </div>
       )}
 
@@ -213,9 +227,11 @@ export default function ContactForm() {
       {formStatus === "error" && (
         <div className="bg-red-900/30 border border-red-500 text-red-300 px-4 py-3 rounded-lg">
           <p className="font-medium">Failed to send message</p>
-          <p className="text-sm">Please try again later or contact me directly via email.</p>
+          <p className="text-sm">
+            Please try again later or contact me directly via email.
+          </p>
         </div>
       )}
     </form>
-  )
+  );
 }

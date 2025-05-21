@@ -585,7 +585,7 @@ export default function ProjectsPage() {
         ) : projects.length === 0 ? (
           <div className="p-6 text-center">
             <p className="text-gray-400 mb-4">
-              You haven't added any projects yet.
+              You haven&apos;t added any projects yet.
             </p>
             <button
               onClick={handleAddProject}

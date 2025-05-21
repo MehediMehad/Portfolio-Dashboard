@@ -1,31 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Trash2, GripVertical } from "lucide-react"
+import { useState } from "react";
+import { Trash2, GripVertical } from "lucide-react";
+import Image from "next/image";
 
 interface SocialLinkItemProps {
-  id: string
-  platform: string
-  url: string
-  icon: string
-  onDelete: (id: string) => void
-  onUpdate: (id: string, data: { platform: string; url: string; icon: string }) => void
+  id: string;
+  platform: string;
+  url: string;
+  icon: string;
+  onDelete: (id: string) => void;
+  onUpdate: (
+    id: string,
+    data: { platform: string; url: string; icon: string }
+  ) => void;
 }
 
-export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUpdate }: SocialLinkItemProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [socialPlatform, setSocialPlatform] = useState(platform)
-  const [socialUrl, setSocialUrl] = useState(url)
-  const [socialIcon, setSocialIcon] = useState(icon)
+export default function SocialLinkItem({
+  id,
+  platform,
+  url,
+  icon,
+  onDelete,
+  onUpdate,
+}: SocialLinkItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [socialPlatform, setSocialPlatform] = useState(platform);
+  const [socialUrl, setSocialUrl] = useState(url);
+  const [socialIcon, setSocialIcon] = useState(icon);
 
   const handleSave = () => {
     onUpdate(id, {
       platform: socialPlatform,
       url: socialUrl,
       icon: socialIcon,
-    })
-    setIsEditing(false)
-  }
+    });
+    setIsEditing(false);
+  };
 
   return (
     <div className="bg-[#1a1025] border border-[#2d1b4d] rounded-lg p-4 flex items-center gap-3">
@@ -36,7 +47,10 @@ export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUp
       {isEditing ? (
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor={`platform-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`platform-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               Platform
             </label>
             <select
@@ -58,7 +72,10 @@ export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUp
           </div>
 
           <div>
-            <label htmlFor={`url-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`url-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               URL
             </label>
             <input
@@ -72,7 +89,10 @@ export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUp
           </div>
 
           <div>
-            <label htmlFor={`icon-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`icon-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               Icon
             </label>
             <input
@@ -90,7 +110,13 @@ export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUp
           <div className="flex items-center">
             <div className="w-8 h-8 bg-[#120b20] rounded-full flex items-center justify-center text-[#a855f7] mr-3">
               {socialIcon ? (
-                <img src={socialIcon || "/placeholder.svg"} alt={socialPlatform} className="w-4 h-4" />
+                <Image
+                  width={16}
+                  height={16}
+                  src={socialIcon || "/placeholder.svg"}
+                  alt={socialPlatform}
+                  className="w-4 h-4"
+                />
               ) : (
                 <div className="w-4 h-4 bg-[#a855f7] rounded-full"></div>
               )}
@@ -143,5 +169,5 @@ export default function SocialLinkItem({ id, platform, url, icon, onDelete, onUp
         </button>
       </div>
     </div>
-  )
+  );
 }

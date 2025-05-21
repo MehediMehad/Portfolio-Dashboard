@@ -18,7 +18,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -27,6 +26,7 @@ const Sidebar = () => {
   const path = usePathname();
 
   const { user, setIsLoading } = useUser();
+  console.log(user);
 
   const router = useRouter();
   const pathname = usePathname();

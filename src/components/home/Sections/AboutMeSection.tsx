@@ -19,11 +19,11 @@ const AboutMeSection = () => {
         </svg> */}
       </div>
       <p className="text-gray-300 leading-relaxed">
-        I'm a full-stack JavaScript developer. I work with React.js, Next.js,
-        Node.js, Express.js, and databases like MongoDB, MySQL, and PostgreSQL.
-        I'm also experienced with Mongoose and Prisma as ORMs. I enjoy building
-        scalable web applications with clean architecture and efficient API
-        integrations.
+        {/* I&apos;m a full-stack JavaScript developer. I work with React.js,
+        Next.js, Node.js, Express.js, and databases like MongoDB, MySQL, and
+        PostgreSQL. I&apos;m also experienced with Mongoose and Prisma as ORMs.
+        I enjoy building scalable web applications with clean architecture and */}
+        efficient API integrations.
       </p>
     </div>
   );

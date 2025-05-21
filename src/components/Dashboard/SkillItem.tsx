@@ -1,31 +1,42 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Trash2, GripVertical } from "lucide-react"
+import { useState } from "react";
+import { Trash2, GripVertical } from "lucide-react";
+import Image from "next/image";
 
 interface SkillItemProps {
-  id: string
-  name: string
-  level: string
-  icon: string
-  onDelete: (id: string) => void
-  onUpdate: (id: string, data: { name: string; level: string; icon: string }) => void
+  id: string;
+  name: string;
+  level: string;
+  icon: string;
+  onDelete: (id: string) => void;
+  onUpdate: (
+    id: string,
+    data: { name: string; level: string; icon: string }
+  ) => void;
 }
 
-export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }: SkillItemProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [skillName, setSkillName] = useState(name)
-  const [skillLevel, setSkillLevel] = useState(level)
-  const [skillIcon, setSkillIcon] = useState(icon)
+export default function SkillItem({
+  id,
+  name,
+  level,
+  icon,
+  onDelete,
+  onUpdate,
+}: SkillItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [skillName, setSkillName] = useState(name);
+  const [skillLevel, setSkillLevel] = useState(level);
+  const [skillIcon, setSkillIcon] = useState(icon);
 
   const handleSave = () => {
     onUpdate(id, {
       name: skillName,
       level: skillLevel,
       icon: skillIcon,
-    })
-    setIsEditing(false)
-  }
+    });
+    setIsEditing(false);
+  };
 
   return (
     <div className="bg-[#1a1025] border border-[#2d1b4d] rounded-lg p-4 flex items-center gap-3">
@@ -36,7 +47,10 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
       {isEditing ? (
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label htmlFor={`skill-name-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`skill-name-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               Skill Name
             </label>
             <input
@@ -49,7 +63,10 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
           </div>
 
           <div>
-            <label htmlFor={`skill-level-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`skill-level-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               Level
             </label>
             <select
@@ -65,7 +82,10 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
           </div>
 
           <div>
-            <label htmlFor={`skill-icon-${id}`} className="block text-gray-400 text-sm mb-1">
+            <label
+              htmlFor={`skill-icon-${id}`}
+              className="block text-gray-400 text-sm mb-1"
+            >
               Icon URL
             </label>
             <input
@@ -81,7 +101,13 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
         <div className="flex-1 flex items-center">
           <div className="w-10 h-10 bg-[#120b20] rounded-lg flex items-center justify-center text-[#a855f7] mr-3">
             {skillIcon ? (
-              <img src={skillIcon || "/placeholder.svg"} alt={skillName} className="w-6 h-6" />
+              <Image
+                width={36}
+                height={36}
+                src={skillIcon || "/placeholder.svg"}
+                alt={skillName}
+                className="w-6 h-6"
+              />
             ) : (
               <div className="w-6 h-6 bg-[#a855f7] rounded-full"></div>
             )}
@@ -93,8 +119,8 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
                 skillLevel === "Expert"
                   ? "text-[#a855f7]"
                   : skillLevel === "Intermediate"
-                    ? "text-blue-400"
-                    : "text-gray-400"
+                  ? "text-blue-400"
+                  : "text-gray-400"
               }`}
             >
               {skillLevel}
@@ -136,5 +162,5 @@ export default function SkillItem({ id, name, level, icon, onDelete, onUpdate }:
         </button>
       </div>
     </div>
-  )
+  );
 }
