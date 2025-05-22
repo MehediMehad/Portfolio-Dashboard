@@ -9,7 +9,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "@/validation/login";
 import { toast } from "sonner";
 import { useUser } from "@/context/UserContext";
-import { loginUser } from "@/services/AuthService";
+import { loginUser } from "@/actions/AuthService";
 
 export default function LoginPage() {
   const form = useForm({
@@ -35,6 +35,7 @@ export default function LoginPage() {
       setError(null);
       setIsLoading(true);
       const res = await loginUser(data);
+
       if (res?.success) {
         toast.success(res.message);
         if (redirect) {

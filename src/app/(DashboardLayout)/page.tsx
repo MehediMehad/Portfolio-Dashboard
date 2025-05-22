@@ -27,7 +27,8 @@ export default function Dashboard() {
     location: "Dhaka, Bangladesh",
     about:
       "As a front-end developer, I'm creating dynamic and responsive web experiences with HTML, CSS, Tailwind CSS, JavaScript, and React. My back-end skills include Node.js, Express.js, and MongoDB, along with strong version control expertise in Git and GitHub.",
-    avatar: "/placeholder.svg?height=160&width=160",
+    avatar:
+      "https://res.cloudinary.com/dxbpbbpbh/image/upload/v1747930710/photo_2024-08-15_01-36-46-1747930705995-519576503.jpg",
   });
 
   // Skills state
@@ -191,7 +192,10 @@ export default function Dashboard() {
           <div className="relative mb-4">
             <div className="w-32 h-32 rounded-full overflow-hidden relative">
               <Image
-                src={profile.avatar || "/placeholder.svg"}
+                src={
+                  profile.avatar ||
+                  "https://res.cloudinary.com/dxbpbbpbh/image/upload/v1747930710/photo_2024-08-15_01-36-46-1747930705995-519576503.jpg"
+                }
                 alt="Profile"
                 width={128}
                 height={128}

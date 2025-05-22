@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
-import { logout } from "@/services/AuthService";
+import { logout } from "@/actions/AuthService";
 import { protectedRoutes } from "@/constants";
 import {
   DropdownMenu,
