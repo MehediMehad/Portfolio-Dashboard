@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Trash2, GripVertical } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Trash2, GripVertical, Upload } from "lucide-react";
 import Image from "next/image";
 
 interface SkillItemProps {
@@ -24,28 +24,54 @@ export default function SkillItem({
   onDelete,
   onUpdate,
 }: SkillItemProps) {
+  const [mounted, setMounted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [skillName, setSkillName] = useState(name);
   const [skillLevel, setSkillLevel] = useState(level);
-  const [skillIcon, setSkillIcon] = useState(icon);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(icon || null);
+
+  const fileIconRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const triggerFileInput = () => {
+    fileIconRef.current?.click();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const url = URL.createObjectURL(file);
+      setImagePreview(url);
+    }
+  };
 
   const handleSave = () => {
     onUpdate(id, {
       name: skillName,
       level: skillLevel,
-      icon: skillIcon,
+      icon: imagePreview || "",
     });
     setIsEditing(false);
   };
 
   return (
     <div className="bg-[#1a1025] border border-[#2d1b4d] rounded-lg p-4 flex items-center gap-3">
+      {/* Drag Handle */}
       <div className="cursor-move text-gray-500">
         <GripVertical size={20} />
       </div>
 
+      {/* Edit Mode */}
       {isEditing ? (
         <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Name Input */}
           <div>
             <label
               htmlFor={`skill-name-${id}`}
@@ -62,6 +88,7 @@ export default function SkillItem({
             />
           </div>
 
+          {/* Level Dropdown */}
           <div>
             <label
               htmlFor={`skill-level-${id}`}
@@ -81,32 +108,57 @@ export default function SkillItem({
             </select>
           </div>
 
+          {/* Image Upload Section */}
           <div>
             <label
-              htmlFor={`skill-icon-${id}`}
+              htmlFor={`Upload-icon-${id}`}
               className="block text-gray-400 text-sm mb-1"
             >
-              Icon URL
+              Upload Icon
             </label>
-            <input
-              id={`skill-icon-${id}`}
-              type="text"
-              value={skillIcon}
-              onChange={(e) => setSkillIcon(e.target.value)}
-              className="w-full bg-[#120b20] border border-[#2d1b4d] rounded px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#a855f7]"
-            />
+            <div className="flex flex-row-reverse justify-end gap-5">
+              <button
+                type="button"
+                onClick={triggerFileInput}
+                className="flex items-center gap-2 bg-[#2d1b4d] hover:bg-[#3d2b5d] text-white px-3 py-2 rounded transition-colors"
+              >
+                <Upload size={16} />
+                Choose Icon
+              </button>
+              <input
+                ref={fileIconRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+
+              {/* Image Preview */}
+              {imagePreview && (
+                <div className="">
+                  <Image
+                    src={imagePreview}
+                    alt="Icon Preview"
+                    width={44}
+                    height={44}
+                    className="w-11 h-11 object-contain rounded border border-[#2d1b4d]"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       ) : (
+        // View Mode
         <div className="flex-1 flex items-center">
           <div className="w-10 h-10 bg-[#120b20] rounded-lg flex items-center justify-center text-[#a855f7] mr-3">
-            {skillIcon ? (
+            {imagePreview ? (
               <Image
+                src={imagePreview}
+                alt={skillName}
                 width={36}
                 height={36}
-                src={skillIcon || "/placeholder.svg"}
-                alt={skillName}
-                className="w-6 h-6"
+                className="w-6 h-6 object-contain"
               />
             ) : (
               <div className="w-6 h-6 bg-[#a855f7] rounded-full"></div>
@@ -129,6 +181,7 @@ export default function SkillItem({
         </div>
       )}
 
+      {/* Action Buttons */}
       <div className="flex items-center gap-2">
         {isEditing ? (
           <>
