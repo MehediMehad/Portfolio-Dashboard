@@ -197,6 +197,7 @@ export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
       email: profile.email,
       address: profile.address,
       aboutMe: profile.aboutMe,
+      contactNumber: profile.phone,
     };
 
     formData.append("data", JSON.stringify(profileData));
@@ -280,6 +281,7 @@ export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
       </div>
 
       <SkillsSection
+        setSkills={setSkills}
         skills={skills}
         handleAddSkill={handleAddSkill}
         handleDeleteSkill={handleDeleteSkill}
