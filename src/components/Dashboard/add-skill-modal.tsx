@@ -4,11 +4,12 @@ import type React from "react";
 import { useState, useRef, useEffect } from "react";
 import { X, Plus, Upload } from "lucide-react";
 import Image from "next/image";
+import { createSkill } from "@/actions/Skils";
 
 interface AddSkillModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onAdd: (skill: { name: string; level: string; icon: string }) => void;
+  onAdd?: (skill: { name: string; level: string; icon: string }) => void; // Optional, in case you still need it
 }
 
 export default function AddSkillModal({
@@ -20,7 +21,7 @@ export default function AddSkillModal({
   const [skillLevel, setSkillLevel] = useState("Beginner");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState({ name: "" });
+  const [errors, setErrors] = useState({ name: "", form: "" });
   const nameInputRef = useRef<HTMLInputElement>(null);
   const fileIconRef = useRef<HTMLInputElement>(null);
 
@@ -31,7 +32,7 @@ export default function AddSkillModal({
       setSkillLevel("Beginner");
       setImageFile(null);
       setImagePreview(null);
-      setErrors({ name: "" });
+      setErrors({ name: "", form: "" });
       setTimeout(() => {
         nameInputRef.current?.focus();
       }, 100);
@@ -51,12 +52,28 @@ export default function AddSkillModal({
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Revoke previous object URL to prevent memory leaks
+      // Validate file size (e.g., max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prev) => ({
+          ...prev,
+          form: "Image size must not exceed 5MB",
+        }));
+        return;
+      }
+      // Validate file type
+      if (!["image/png", "image/jpeg", "image/svg+xml"].includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          form: "Only PNG, JPEG, or SVG files are allowed",
+        }));
+        return;
+      }
       if (imagePreview) {
         URL.revokeObjectURL(imagePreview);
       }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, form: "" }));
     }
   };
 
@@ -66,24 +83,46 @@ export default function AddSkillModal({
   };
 
   // Handle form submission
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
+    // Client-side validation
     if (!skillName.trim()) {
-      setErrors({ name: "Skill name is required" });
+      setErrors((prev) => ({ ...prev, name: "Skill name is required" }));
       nameInputRef.current?.focus();
       return;
     }
 
-    // Add the skill
-    onAdd({
+    // Create FormData object
+    const formData = new FormData();
+    const skillData = {
       name: skillName.trim(),
       level: skillLevel,
-      icon: imagePreview || "", // Use imagePreview as the icon URL
-    });
+    };
+    formData.append("data", JSON.stringify(skillData));
 
-    // Close modal
+    if (imageFile) {
+      formData.append("file", imageFile);
+    }
+
+    // Call server action
+    const response = await createSkill(formData);
+
+    if (response.error) {
+      setErrors((prev) => ({ ...prev, form: response.error }));
+      return;
+    }
+
+    // Optionally call onAdd for local state updates (if provided)
+    if (onAdd) {
+      onAdd({
+        name: skillName.trim(),
+        level: skillLevel,
+        icon: imagePreview || "", // Use the preview URL or server-provided URL if available
+      });
+    }
+
+    // Close modal on success
     onClose();
   };
 
@@ -140,7 +179,7 @@ export default function AddSkillModal({
                 value={skillName}
                 onChange={(e) => {
                   setSkillName(e.target.value);
-                  if (errors.name) setErrors({ name: "" });
+                  if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
                 }}
                 className={`w-full bg-[#1a1025] border ${
                   errors.name ? "border-red-500" : "border-[#2d1b4d]"
@@ -178,9 +217,9 @@ export default function AddSkillModal({
                 htmlFor="modal-skill-icon"
                 className="block text-gray-400 text-sm mb-2"
               >
-                Upload Icon
+                Upload Icon (Optional)
               </label>
-              <div className="flex flex-row-reverse  gap-5 justify-between">
+              <div className="flex flex-row-reverse justify-end gap-5">
                 <button
                   type="button"
                   onClick={triggerFileInput}
@@ -209,7 +248,15 @@ export default function AddSkillModal({
                   </div>
                 )}
               </div>
+              <p className="mt-1 text-gray-500 text-xs">
+                Upload an image file for the skill icon
+              </p>
             </div>
+
+            {/* Form Error */}
+            {errors.form && (
+              <p className="text-red-500 text-sm">{errors.form}</p>
+            )}
 
             {/* Preview */}
             {(skillName || imagePreview) && (
