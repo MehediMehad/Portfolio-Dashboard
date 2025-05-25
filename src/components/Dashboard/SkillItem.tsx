@@ -5,6 +5,8 @@ import { Trash2, GripVertical, Upload } from "lucide-react";
 import Image from "next/image";
 import { updateSkill } from "@/actions/Skils";
 import { toast } from "sonner";
+import { deleteSkill } from "@/actions/MyInfo";
+import SkillDeleteConfirmationModal from "./skill-delete-confirmation-modal";
 
 interface SkillItemProps {
   id: string;
@@ -35,6 +37,7 @@ export default function SkillItem({
   const [errors, setErrors] = useState({ name: "", form: "" });
   const fileIconRef = useRef<HTMLInputElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Ensure component is mounted before rendering
   useEffect(() => {
@@ -148,6 +151,33 @@ export default function SkillItem({
     });
 
     setIsEditing(false);
+  };
+
+  // // Handle delete action
+  // const handleDelete = async () => {
+  //   // Call server action
+  //   const response = await deleteSkill(id);
+
+  //   if (response.error) {
+  //     setErrors((prev) => ({ ...prev, form: response.error }));
+  //     return;
+  //   }
+
+  //   // Update local UI state
+  //   onDelete(id);
+  // };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    const response = await deleteSkill(id);
+
+    if (response.error) {
+      setErrors((prev) => ({ ...prev, form: response.error }));
+      return;
+    }
+
+    // Update local UI state
+    onDelete(id);
   };
 
   // Handle cancel action
@@ -337,13 +367,22 @@ export default function SkillItem({
           </button>
         )}
         <button
-          onClick={() => onDelete(id)}
+          onClick={() => setIsDeleteModalOpen(true)}
           className="p-1 text-gray-400 hover:text-red-500 transition-colors"
           aria-label="Delete skill"
         >
           <Trash2 size={18} />
         </button>
       </div>
+      {/* Delete Confirmation Modal */}
+      <SkillDeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Skill"
+        message="Are you sure you want to delete this skill? This action cannot be undone."
+        itemName={skillName}
+      />
     </div>
   );
 }

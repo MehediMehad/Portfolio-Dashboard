@@ -4,8 +4,6 @@ import { cookies } from "next/headers";
 
 export const updateProfile = async (userData: FormData): Promise<any> => {
   try {
-    console.log("🚀🚀updateProfile", userData);
-
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
@@ -44,5 +42,31 @@ export const getMyInfo = async () => {
     return data;
   } catch (error: any) {
     return Error(error.message);
+  }
+};
+
+// Skill deleted
+export const deleteSkill = async (skillId: string) => {
+  try {
+    const token = (await cookies()).get("accessToken")?.value;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/skill/${skillId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: token || "",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Failed to delete skill");
+    }
+
+    revalidateTag("user-profile");
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("Delete skill error:", error.message);
+    return { error: error.message };
   }
 };
