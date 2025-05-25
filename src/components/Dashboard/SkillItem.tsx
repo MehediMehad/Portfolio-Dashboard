@@ -3,9 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Trash2, GripVertical, Upload } from "lucide-react";
 import Image from "next/image";
-import { updateSkill } from "@/actions/Skils";
+import { updateSkill, deleteSkill } from "@/actions/Skils";
 import { toast } from "sonner";
-import { deleteSkill } from "@/actions/MyInfo";
 import SkillDeleteConfirmationModal from "./skill-delete-confirmation-modal";
 
 interface SkillItemProps {

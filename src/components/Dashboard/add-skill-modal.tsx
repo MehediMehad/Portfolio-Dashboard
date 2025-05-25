@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { X, Plus, Upload } from "lucide-react";
 import Image from "next/image";
 import { createSkill } from "@/actions/Skils";
+import { toast } from "sonner";
 
 interface AddSkillModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export default function AddSkillModal({
 }: AddSkillModalProps) {
   const [skillName, setSkillName] = useState("");
   const [skillLevel, setSkillLevel] = useState("Beginner");
+  const [skillIcon, setSkillIcon] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState({ name: "", form: "" });
@@ -107,18 +109,23 @@ export default function AddSkillModal({
 
     // Call server action
     const response = await createSkill(formData);
+    console.log("Skill creation response:", response);
+
+    if (response.success) {
+      toast.success("Skill added successfully!");
+      setSkillIcon(response.data.icon); // Use the returned icon URL
+    }
 
     if (response.error) {
       setErrors((prev) => ({ ...prev, form: response.error }));
       return;
     }
 
-    // Optionally call onAdd for local state updates (if provided)
     if (onAdd) {
       onAdd({
         name: skillName.trim(),
         level: skillLevel,
-        icon: imagePreview || "", // Use the preview URL or server-provided URL if available
+        icon: response.data.icon || "",
       });
     }
 
