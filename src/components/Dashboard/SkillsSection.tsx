@@ -1,8 +1,10 @@
 import { Plus } from "lucide-react";
 import SkillItem from "@/components/Dashboard/SkillItem";
+import { TSkill } from "@/types";
+import AddSkillItem from "./AddSkillItem";
 
 type SkillsSectionProps = {
-  skills: any[];
+  skills: TSkill[];
   handleAddSkill: () => void;
   handleDeleteSkill: (id: string) => void;
   handleUpdateSkill: (
@@ -17,6 +19,8 @@ export default function SkillsSection({
   handleDeleteSkill,
   handleUpdateSkill,
 }: SkillsSectionProps) {
+  const filteredSkills = skills.filter((skill) => !skill.isNew);
+  const newSkills = skills.filter((skill) => skill.isNew);
   return (
     <div className="bg-[#120b20] border border-[#2d1b4d] rounded-lg p-6 mb-8">
       <div className="flex justify-between items-center mb-6">
@@ -30,21 +34,32 @@ export default function SkillsSection({
         </button>
       </div>
       <div className="space-y-4">
-        {skills.map((skill) => (
+        {filteredSkills.map((skill) => (
           <SkillItem
             key={skill.id}
-            id={skill.id}
-            name={skill.name}
-            level={skill.level}
-            icon={skill.icon}
+            id={skill.id ?? ""}
+            name={skill.name ?? ""}
+            level={skill.level ?? ""}
+            icon={skill.icon ?? ""}
             onDelete={handleDeleteSkill}
             onUpdate={handleUpdateSkill}
           />
         ))}
-        {skills.length === 0 && (
+        {filteredSkills.length === 0 && (
           <div className="text-center py-8 text-gray-400">
             <p>No skills added yet.</p>
           </div>
+        )}
+        {newSkills.length > 0 && (
+          <AddSkillItem
+            key={newSkills[0].id ?? ""}
+            id={newSkills[0].id ?? ""}
+            name={"Jjjjj"}
+            level={newSkills[0].level ?? ""}
+            icon={newSkills[0].icon ?? ""}
+            onDelete={handleDeleteSkill}
+            onUpdate={handleUpdateSkill}
+          />
         )}
       </div>
     </div>

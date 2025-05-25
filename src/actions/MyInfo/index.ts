@@ -1,11 +1,10 @@
 "use server";
-
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const updateProfile = async (userData: FormData): Promise<any> => {
   try {
-    console.log("🚀🚀", userData);
+    console.log("🚀🚀updateProfile", userData);
 
     const token = (await cookies()).get("accessToken")?.value;
 

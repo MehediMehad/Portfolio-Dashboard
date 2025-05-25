@@ -9,13 +9,14 @@ import AboutMeSection from "./AboutMe";
 import HiddenFileInput from "./HiddenFileInput";
 import { updateProfile } from "@/actions/MyInfo";
 import { useState, useRef } from "react";
-import { TMyInfo } from "@/types";
+import { TMyInfo, TSkill } from "@/types";
 
 type TDashboardprops = {
   myInfo: TMyInfo;
+  skillData: TSkill[];
 };
 
-export default function Dashboard({ myInfo }: TDashboardprops) {
+export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
   // Profile state
   const [profile, setProfile] = useState({
     name: myInfo.name || "",
@@ -29,7 +30,7 @@ export default function Dashboard({ myInfo }: TDashboardprops) {
 
   // Skills state
   const [skills, setSkills] = useState(
-    myInfo.skills || [
+    skillData || [
       {
         id: "1",
         name: "Tailwind CSS",
@@ -144,12 +145,17 @@ export default function Dashboard({ myInfo }: TDashboardprops) {
 
   // Add new skill
   const handleAddSkill = () => {
-    const newId = Date.now().toString();
-    setSkills((prev) => [
-      ...prev,
-      { id: newId, name: "New Skill", level: "Beginner", icon: "" },
-    ]);
+    const newSkill = {
+      name: "New Skill",
+      level: "Beginner",
+      icon: "",
+      isNew: true,
+    };
+
+    setSkills((prev) => [...prev, newSkill]);
   };
+
+  console.log("handleAddSkill:☑️☑️", skills);
 
   // Handle social link deletion
   const handleDeleteSocialLink = (id: string) => {

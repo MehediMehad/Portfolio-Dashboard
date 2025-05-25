@@ -17,4 +17,16 @@ export interface TMyInfo {
   address: string;
   createdAt: string;
   updatedAt: string;
+  skills?: {
+    id: string;
+    name: string;
+    level: string;
+    icon: string;
+  }[];
+  socialLinks?: {
+    id: string;
+    platform: string;
+    url: string;
+    icon: string;
+  }[];
 }

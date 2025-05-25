@@ -9,6 +9,7 @@ interface SkillItemProps {
   name: string;
   level: string;
   icon: string;
+  isNew?: boolean;
   onDelete: (id: string) => void;
   onUpdate: (
     id: string,
@@ -16,16 +17,17 @@ interface SkillItemProps {
   ) => void;
 }
 
-export default function SkillItem({
+export default function AddSkillItem({
   id,
   name,
   level,
   icon,
+  isNew = false,
   onDelete,
   onUpdate,
 }: SkillItemProps) {
   const [mounted, setMounted] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true); // Auto-edit if new
   const [skillName, setSkillName] = useState(name);
   const [skillLevel, setSkillLevel] = useState(level);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -50,6 +52,7 @@ export default function SkillItem({
       setImagePreview(URL.createObjectURL(file));
     }
   };
+
   const handleSave = () => {
     onUpdate(id, {
       name: skillName,
@@ -133,7 +136,7 @@ export default function SkillItem({
 
               {/* Image Preview */}
               {imagePreview && (
-                <div className="">
+                <div>
                   <Image
                     src={imagePreview}
                     alt="Icon Preview"
@@ -187,30 +190,40 @@ export default function SkillItem({
               onClick={handleSave}
               className="px-3 py-1 bg-[#a855f7] text-white text-sm rounded hover:bg-[#9333ea] transition-colors"
             >
-              Save
+              {isNew ? "Add" : "Save"}
             </button>
             <button
-              onClick={() => setIsEditing(false)}
+              onClick={() => {
+                if (isNew) {
+                  onDelete(id); // discard new skill
+                } else {
+                  setIsEditing(false);
+                }
+              }}
               className="px-3 py-1 bg-[#2d1b4d] text-white text-sm rounded hover:bg-[#3d2b5d] transition-colors"
             >
               Cancel
             </button>
           </>
         ) : (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="px-3 py-1 bg-[#2d1b4d] text-white text-sm rounded hover:bg-[#3d2b5d] transition-colors"
-          >
-            Edit
-          </button>
+          <>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-3 py-1 bg-[#2d1b4d] text-white text-sm rounded hover:bg-[#3d2b5d] transition-colors"
+            >
+              Edit
+            </button>
+            {!isNew && (
+              <button
+                onClick={() => onDelete(id)}
+                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                aria-label="Delete skill"
+              >
+                <Trash2 size={18} />
+              </button>
+            )}
+          </>
         )}
-        <button
-          onClick={() => onDelete(id)}
-          className="p-1 text-gray-400 hover:text-red-500 transition-colors"
-          aria-label="Delete skill"
-        >
-          <Trash2 size={18} />
-        </button>
       </div>
     </div>
   );
