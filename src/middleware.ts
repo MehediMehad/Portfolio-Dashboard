@@ -40,9 +40,6 @@ const roleBasedPrivateRoutes = {
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
   const userInfo = await getCurrentUser(); // 👤 Current User Info
-
-  console.log(userInfo);
-
   const normalizedRole = userInfo?.role.toLowerCase() as Role;
 
   // লগইন না থাকলে

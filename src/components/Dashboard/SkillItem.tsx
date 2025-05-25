@@ -127,9 +127,6 @@ export default function SkillItem({
       formData.append("file", imagePreview); // Send existing icon URL if no new file
     }
 
-    console.log(formData.get("data"));
-    console.log("File to upload:", imageFile);
-
     // Call server action
     const response = await updateSkill(formData);
 

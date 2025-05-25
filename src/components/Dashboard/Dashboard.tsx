@@ -155,8 +155,6 @@ export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
     setSkills((prev) => [...prev, newSkill]);
   };
 
-  console.log("handleAddSkill:☑️☑️", skills);
-
   // Handle social link deletion
   const handleDeleteSocialLink = (id: string) => {
     setSocialLinks((prev) => prev.filter((link) => link.id !== id));

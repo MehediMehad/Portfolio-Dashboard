@@ -26,7 +26,6 @@ const Sidebar = () => {
   const path = usePathname();
 
   const { user, setIsLoading } = useUser();
-  console.log(user);
 
   const router = useRouter();
   const pathname = usePathname();
