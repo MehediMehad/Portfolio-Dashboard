@@ -3,6 +3,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Trash2, GripVertical, Upload } from "lucide-react";
 import Image from "next/image";
+import { updateSkill } from "@/actions/Skils";
+import { toast } from "sonner";
 
 interface SkillItemProps {
   id: string;
@@ -30,34 +32,138 @@ export default function SkillItem({
   const [skillLevel, setSkillLevel] = useState(level);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(icon || null);
+  const [errors, setErrors] = useState({ name: "", form: "" });
   const fileIconRef = useRef<HTMLInputElement>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Ensure component is mounted before rendering
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null;
+  // Sync props with state when they change
+  useEffect(() => {
+    setSkillName(name);
+    setSkillLevel(level);
+    setImagePreview(icon || null);
+    setImageFile(null);
+    setErrors({ name: "", form: "" });
+  }, [name, level, icon]);
 
-  const triggerFileInput = () => {
-    fileIconRef.current?.click();
-  };
+  // Clean up object URL when component unmounts or image changes
+  useEffect(() => {
+    return () => {
+      if (imagePreview && imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
+  // Focus on name input when entering edit mode
+  useEffect(() => {
+    if (isEditing) {
+      nameInputRef.current?.focus();
+    }
+  }, [isEditing]);
 
   // Handle image change
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prev) => ({
+          ...prev,
+          form: "Image size must not exceed 5MB",
+        }));
+        return;
+      }
+      // Validate file type
+      if (!["image/png", "image/jpeg", "image/svg+xml"].includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          form: "Only PNG, JPEG, or SVG files are allowed",
+        }));
+        return;
+      }
+      if (imagePreview && imagePreview.startsWith("blob:")) {
+        URL.revokeObjectURL(imagePreview);
+      }
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setErrors((prev) => ({ ...prev, form: "" }));
     }
   };
-  const handleSave = () => {
-    onUpdate(id, {
-      name: skillName,
+
+  // Trigger file input click
+  const triggerFileInput = () => {
+    fileIconRef.current?.click();
+  };
+
+  // Handle save action
+  const handleSave = async () => {
+    // Client-side validation
+    if (!skillName.trim()) {
+      setErrors((prev) => ({ ...prev, name: "Skill name is required" }));
+      nameInputRef.current?.focus();
+      return;
+    }
+
+    // Create FormData object
+    const formData = new FormData();
+
+    const skillData = {
+      skillId: id,
+      name: skillName.trim(),
       level: skillLevel,
-      icon: imagePreview || "",
+    };
+    formData.append("data", JSON.stringify(skillData));
+
+    if (imageFile) {
+      formData.append("file", imageFile);
+    } else if (imagePreview) {
+      formData.append("file", imagePreview); // Send existing icon URL if no new file
+    }
+
+    console.log(formData.get("data"));
+    console.log("File to upload:", imageFile);
+
+    // Call server action
+    const response = await updateSkill(formData);
+
+    if (response.success) {
+      toast.success("Skill updated successfully!");
+    }
+
+    if (response.error) {
+      setErrors((prev) => ({ ...prev, form: response.error }));
+      return;
+    }
+
+    // Update local UI state
+    onUpdate(id, {
+      name: skillName.trim(),
+      level: skillLevel,
+      icon: response.data?.icon || imagePreview || "", // Use server-provided URL if available
     });
+
     setIsEditing(false);
   };
+
+  // Handle cancel action
+  const handleCancel = () => {
+    setSkillName(name);
+    setSkillLevel(level);
+    setImageFile(null);
+    if (imagePreview && imagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImagePreview(icon || null);
+    setErrors({ name: "", form: "" });
+    setIsEditing(false);
+  };
+
+  if (!mounted) return null;
 
   return (
     <div className="bg-[#1a1025] border border-[#2d1b4d] rounded-lg p-4 flex items-center gap-3">
@@ -75,15 +181,24 @@ export default function SkillItem({
               htmlFor={`skill-name-${id}`}
               className="block text-gray-400 text-sm mb-1"
             >
-              Skill Name
+              Skill Name <span className="text-red-500">*</span>
             </label>
             <input
+              ref={nameInputRef}
               id={`skill-name-${id}`}
               type="text"
               value={skillName}
-              onChange={(e) => setSkillName(e.target.value)}
-              className="w-full bg-[#120b20] border border-[#2d1b4d] rounded px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#a855f7]"
+              onChange={(e) => {
+                setSkillName(e.target.value);
+                if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+              }}
+              className={`w-full bg-[#120b20] border ${
+                errors.name ? "border-red-500" : "border-[#2d1b4d]"
+              } rounded px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-[#a855f7]`}
             />
+            {errors.name && (
+              <p className="mt-1 text-red-500 text-sm">{errors.name}</p>
+            )}
           </div>
 
           {/* Level Dropdown */}
@@ -109,7 +224,7 @@ export default function SkillItem({
           {/* Image Upload Section */}
           <div>
             <label
-              htmlFor={`Upload-icon-${id}`}
+              htmlFor={`skill-icon-${id}`}
               className="block text-gray-400 text-sm mb-1"
             >
               Upload Icon
@@ -125,15 +240,14 @@ export default function SkillItem({
               </button>
               <input
                 ref={fileIconRef}
+                id={`skill-icon-${id}`}
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
                 className="hidden"
               />
-
-              {/* Image Preview */}
               {imagePreview && (
-                <div className="">
+                <div>
                   <Image
                     src={imagePreview}
                     alt="Icon Preview"
@@ -145,6 +259,13 @@ export default function SkillItem({
               )}
             </div>
           </div>
+
+          {/* Form Error */}
+          {errors.form && (
+            <div className="md:col-span-3">
+              <p className="text-red-500 text-sm">{errors.form}</p>
+            </div>
+          )}
         </div>
       ) : (
         // View Mode
@@ -154,13 +275,24 @@ export default function SkillItem({
               <Image
                 src={imagePreview}
                 alt={skillName}
-                width={36}
-                height={36}
+                width={24}
+                height={24}
                 className="w-6 h-6 object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                  e.currentTarget.nextElementSibling?.classList.remove(
+                    "hidden"
+                  );
+                }}
               />
             ) : (
               <div className="w-6 h-6 bg-[#a855f7] rounded-full"></div>
             )}
+            <div
+              className={`w-6 h-6 bg-[#a855f7] rounded-full ${
+                imagePreview ? "hidden" : ""
+              }`}
+            ></div>
           </div>
           <div>
             <h3 className="text-white font-medium">{skillName}</h3>
@@ -190,7 +322,7 @@ export default function SkillItem({
               Save
             </button>
             <button
-              onClick={() => setIsEditing(false)}
+              onClick={handleCancel}
               className="px-3 py-1 bg-[#2d1b4d] text-white text-sm rounded hover:bg-[#3d2b5d] transition-colors"
             >
               Cancel
