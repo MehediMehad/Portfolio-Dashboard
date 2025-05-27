@@ -9,14 +9,19 @@ import AboutMeSection from "./AboutMe";
 import HiddenFileInput from "./HiddenFileInput";
 import { updateProfile } from "@/actions/MyInfo";
 import { useState, useRef } from "react";
-import { TMyInfo, TSkill } from "@/types";
+import { TMyInfo, TSkill, TSocialMedia } from "@/types";
 
 type TDashboardprops = {
   myInfo: TMyInfo;
   skillData: TSkill[];
+  socialMediaData: TSocialMedia[];
 };
 
-export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
+export default function Dashboard({
+  myInfo,
+  skillData,
+  socialMediaData,
+}: TDashboardprops) {
   // Profile state
   const [profile, setProfile] = useState({
     name: myInfo.name || "",
@@ -57,6 +62,8 @@ export default function Dashboard({ myInfo, skillData }: TDashboardprops) {
       },
     ]
   );
+
+  console.log("😎", socialMediaData, skillData);
 
   // Social links state
   const [socialLinks, setSocialLinks] = useState(
