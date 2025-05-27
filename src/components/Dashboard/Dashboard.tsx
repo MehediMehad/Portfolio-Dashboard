@@ -63,26 +63,24 @@ export default function Dashboard({
     ]
   );
 
-  console.log("😎", socialMediaData, skillData);
-
   // Social links state
   const [socialLinks, setSocialLinks] = useState(
-    myInfo.socialLinks || [
+    socialMediaData || [
       {
         id: "1",
-        platform: "GitHub",
+        platformName: "GitHub",
         url: "https://github.com/username  ",
         icon: "/icons/github.svg",
       },
       {
         id: "2",
-        platform: "LinkedIn",
+        platformName: "LinkedIn",
         url: "https://linkedin.com/in/username  ",
         icon: "/icons/linkedin.svg",
       },
       {
         id: "3",
-        platform: "Twitter",
+        platformName: "Twitter",
         url: "https://twitter.com/username  ",
         icon: "/icons/twitter.svg",
       },
@@ -170,7 +168,7 @@ export default function Dashboard({
   // Handle social link update
   const handleUpdateSocialLink = (
     id: string,
-    data: { platform: string; url: string; icon: string }
+    data: { platformName: string; url: string; icon: string }
   ) => {
     setSocialLinks((prev) =>
       prev.map((link) => {
@@ -184,11 +182,17 @@ export default function Dashboard({
 
   // Add new social link
   const handleAddSocialLink = () => {
-    const newId = Date.now().toString();
-    setSocialLinks((prev) => [
-      ...prev,
-      { id: newId, platform: "GitHub", url: "https://github.com/  ", icon: "" },
-    ]);
+    const newSocialMedia = {
+      id: Date.now().toString(),
+      platformName: "New Platform",
+      url: "",
+      icon: "",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isNew: true,
+    };
+
+    setSocialLinks((prev) => [...prev, newSocialMedia]);
   };
 
   // Save all changes
@@ -295,6 +299,7 @@ export default function Dashboard({
 
       <SocialLinksSection
         socialLinks={socialLinks}
+        setSocialLinks={setSocialLinks}
         handleAddSocialLink={handleAddSocialLink}
         handleDeleteSocialLink={handleDeleteSocialLink}
         handleUpdateSocialLink={handleUpdateSocialLink}

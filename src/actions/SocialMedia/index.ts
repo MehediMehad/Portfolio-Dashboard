@@ -23,7 +23,7 @@ export const createSocialMedia = async (
       throw new Error("Failed to update profile");
     }
     // revalidateTag("user-profile");
-    revalidateTag("user-profile");
+    revalidateTag("social-media");
 
     return await res.json();
   } catch (error: any) {
@@ -43,7 +43,7 @@ export const getAllSocialMedias = async () => {
           Authorization: token || "",
         },
         next: {
-          tags: ["user-profile"],
+          tags: ["user-profile", "social-media"],
         },
       }
     );

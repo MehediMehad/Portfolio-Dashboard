@@ -6,32 +6,32 @@ import Image from "next/image";
 
 interface SocialLinkItemProps {
   id: string;
-  platform: string;
+  platformName: string;
   url: string;
   icon: string;
   onDelete: (id: string) => void;
   onUpdate: (
     id: string,
-    data: { platform: string; url: string; icon: string }
+    data: { platformName: string; url: string; icon: string }
   ) => void;
 }
 
 export default function SocialLinkItem({
   id,
-  platform,
+  platformName,
   url,
   icon,
   onDelete,
   onUpdate,
 }: SocialLinkItemProps) {
   const [isEditing, setIsEditing] = useState(false);
-  const [socialPlatform, setSocialPlatform] = useState(platform);
+  const [socialPlatform, setSocialPlatform] = useState(platformName);
   const [socialUrl, setSocialUrl] = useState(url);
   const [socialIcon, setSocialIcon] = useState(icon);
 
   const handleSave = () => {
     onUpdate(id, {
-      platform: socialPlatform,
+      platformName: socialPlatform,
       url: socialUrl,
       icon: socialIcon,
     });
