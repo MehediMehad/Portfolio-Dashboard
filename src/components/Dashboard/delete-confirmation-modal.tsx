@@ -3,7 +3,7 @@
 import type React from "react";
 import { AlertTriangle, X } from "lucide-react";
 
-interface SkillDeleteConfirmationModalProps {
+interface DeleteConfirmationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -12,14 +12,14 @@ interface SkillDeleteConfirmationModalProps {
   itemName?: string;
 }
 
-export default function SkillDeleteConfirmationModal({
+export default function DeleteConfirmationModal({
   isOpen,
   onClose,
   onConfirm,
   title,
   message,
   itemName,
-}: SkillDeleteConfirmationModalProps) {
+}: DeleteConfirmationModalProps) {
   // Handle escape key
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {

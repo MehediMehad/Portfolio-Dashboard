@@ -5,7 +5,7 @@ import { Trash2, GripVertical, Upload } from "lucide-react";
 import Image from "next/image";
 import { updateSkill, deleteSkill } from "@/actions/Skils";
 import { toast } from "sonner";
-import SkillDeleteConfirmationModal from "./skill-delete-confirmation-modal";
+import DeleteConfirmationModal from "./delete-confirmation-modal";
 
 interface SkillItemProps {
   id: string;
@@ -148,20 +148,6 @@ export default function SkillItem({
 
     setIsEditing(false);
   };
-
-  // // Handle delete action
-  // const handleDelete = async () => {
-  //   // Call server action
-  //   const response = await deleteSkill(id);
-
-  //   if (response.error) {
-  //     setErrors((prev) => ({ ...prev, form: response.error }));
-  //     return;
-  //   }
-
-  //   // Update local UI state
-  //   onDelete(id);
-  // };
 
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {
@@ -371,7 +357,7 @@ export default function SkillItem({
         </button>
       </div>
       {/* Delete Confirmation Modal */}
-      <SkillDeleteConfirmationModal
+      <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDeleteConfirm}

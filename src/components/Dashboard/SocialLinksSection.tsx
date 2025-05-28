@@ -20,9 +20,9 @@ type SocialLinksSectionProps = {
 export default function SocialLinksSection({
   socialLinks,
   setSocialLinks,
-  handleAddSocialLink,
   handleDeleteSocialLink,
   handleUpdateSocialLink,
+  handleAddSocialLink,
 }: SocialLinksSectionProps) {
   const [isAddSocialLinksModalOpen, setIsAddSocialLinksModalOpen] =
     useState(false);

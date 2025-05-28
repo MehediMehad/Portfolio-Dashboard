@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Trash2, GripVertical } from "lucide-react";
 import Image from "next/image";
+import { deleteSocialMedia } from "@/actions/SocialMedia";
+import DeleteConfirmationModal from "./delete-confirmation-modal";
 
 interface SocialLinkItemProps {
   id: string;
@@ -28,6 +30,7 @@ export default function SocialLinkItem({
   const [socialPlatform, setSocialPlatform] = useState(platformName);
   const [socialUrl, setSocialUrl] = useState(url);
   const [socialIcon, setSocialIcon] = useState(icon);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const handleSave = () => {
     onUpdate(id, {
@@ -36,6 +39,19 @@ export default function SocialLinkItem({
       icon: socialIcon,
     });
     setIsEditing(false);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async () => {
+    const response = await deleteSocialMedia(id);
+
+    if (response.error) {
+      // setErrors((prev) => ({ ...prev, form: response.error }));
+      return <h1>er5r</h1>;
+    }
+
+    // Update local UI state
+    onDelete(id);
   };
 
   return (
@@ -137,7 +153,8 @@ export default function SocialLinkItem({
       )}
 
       <div className="flex items-center gap-2">
-        {isEditing ? (
+        {/* TODO */}
+        {/* {isEditing ? (
           <>
             <button
               onClick={handleSave}
@@ -159,15 +176,25 @@ export default function SocialLinkItem({
           >
             Edit
           </button>
-        )}
+        )} */}
         <button
-          onClick={() => onDelete(id)}
+          onClick={() => setIsDeleteModalOpen(true)}
           className="p-1 text-gray-400 hover:text-red-500 transition-colors"
           aria-label="Delete social link"
         >
           <Trash2 size={18} />
         </button>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Social Media"
+        message="Are you sure you want to delete this Social Media? This action cannot be undone."
+        itemName={platformName}
+      />
     </div>
   );
 }
