@@ -2,7 +2,7 @@ import { getMyInfo } from "@/actions/MyInfo";
 import { getAllSkills } from "@/actions/Skils";
 import { getAllSocialMedias } from "@/actions/SocialMedia";
 import Dashboard from "@/components/Dashboard/Dashboard";
-import { TMyInfo, TSkill } from "@/types";
+import { TMyInfo } from "@/types";
 
 const DashboardPage = async () => {
   const data = await getMyInfo();
