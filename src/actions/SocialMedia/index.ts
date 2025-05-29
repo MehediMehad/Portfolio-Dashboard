@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 export const createSocialMedia = async (
   socialMediaData: FormData
 ): Promise<any> => {
+  console.log("skillData =>", socialMediaData);
   try {
     const token = (await cookies()).get("accessToken")?.value;
 

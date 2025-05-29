@@ -2,27 +2,28 @@
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
-export const createProject = async (projectsData: FormData): Promise<any> => {
+export const createProject = async (formData: FormData): Promise<any> => {
+  console.log(formData);
+
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/projects`, {
       method: "POST",
-      body: projectsData,
+      body: formData,
       headers: {
         Authorization: token || "",
       },
     });
 
     if (!res.ok) {
-      throw new Error("Failed to projects");
+      throw new Error("Failed to create project");
     }
 
     revalidateTag("project");
-
     return await res.json();
   } catch (error: any) {
-    console.error("projects error:", error.message);
+    console.error("Create project error:", error.message);
     return { error: error.message };
   }
 };
@@ -55,7 +56,12 @@ export const getAllProjects = async () => {
   }
 };
 
-export const updateProject = async (skillData: FormData) => {
+export const updateProject = async (
+  editingProjectId: string,
+  skillData: FormData
+) => {
+  console.log(editingProjectId);
+
   try {
     const token = (await cookies()).get("accessToken")?.value;
 

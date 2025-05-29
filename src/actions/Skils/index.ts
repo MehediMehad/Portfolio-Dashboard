@@ -3,6 +3,8 @@ import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const createSkill = async (skillData: FormData): Promise<any> => {
+  console.log("skillData =>", skillData);
+
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
