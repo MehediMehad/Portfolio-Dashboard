@@ -1,7 +1,6 @@
 "use client";
 
 import type React from "react";
-
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { Editor } from "@tinymce/tinymce-react";
