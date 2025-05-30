@@ -10,20 +10,29 @@ import {
   Tag,
 } from "lucide-react";
 
-interface Blog {
+export interface TBlog {
   id: string;
   title: string;
-  excerpt: string;
-  content: string;
-  author: { name: string; image: string };
-  date: string;
-  tags: string[];
+  overview: string;
   image: string;
-  readTime: string;
+  content: string;
+  tags: string[];
+  is_public: boolean;
+  isFeatured: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+  authorId: string;
+  author: Author;
+}
+export interface Author {
+  id: string;
+  name: string;
+  profilePhoto: string;
 }
 
 interface BlogItemProps {
-  blog: Blog;
+  blog: TBlog;
   isExpanded: boolean;
   onEdit: (id: string) => void;
   onDelete: (id: string) => void;
@@ -50,15 +59,11 @@ export default function BlogItem({
         </div>
         <div className="flex-1">
           <h3 className="text-white font-bold text-lg">{blog.title}</h3>
-          <p className="text-gray-400 text-sm line-clamp-1">{blog.excerpt}</p>
+          <p className="text-gray-400 text-sm line-clamp-1">{blog.overview}</p>
           <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Calendar size={12} />
-              <span>{blog.date}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Clock size={12} />
-              <span>{blog.readTime}</span>
+              <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-1">
               <User size={12} />

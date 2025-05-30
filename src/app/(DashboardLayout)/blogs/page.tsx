@@ -3,7 +3,6 @@ import Blogs from "@/components/Blog/Blog";
 
 const BlogPage = async () => {
   const data = await getAllBlogs();
-  console.log(data?.data);
 
   return (
     <div>

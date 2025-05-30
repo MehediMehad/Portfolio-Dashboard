@@ -11,4 +11,10 @@ export interface TBlog {
   createdAt: string;
   updatedAt: string;
   authorId: string;
+  author: Author;
+}
+export interface Author {
+  id: string;
+  name: string;
+  profilePhoto: string;
 }

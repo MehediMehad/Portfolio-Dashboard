@@ -1,21 +1,10 @@
 import Spinner from "@/components/ui/spinner";
 import BlogItem from "./BlogItem";
 import { Plus } from "lucide-react";
-
-interface Blog {
-  id: string;
-  title: string;
-  excerpt: string;
-  content: string;
-  author: { name: string; image: string };
-  date: string;
-  tags: string[];
-  image: string;
-  readTime: string;
-}
+import { TBlog } from "@/types";
 
 interface BlogListProps {
-  blogs: Blog[];
+  blogs: TBlog[];
   isLoading: boolean;
   expandedBlog: string | null;
   onAddBlog: () => void;
