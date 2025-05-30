@@ -3,8 +3,6 @@ import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const createProject = async (formData: FormData): Promise<any> => {
-  console.log(formData);
-
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
