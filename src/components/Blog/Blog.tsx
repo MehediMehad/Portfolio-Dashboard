@@ -6,6 +6,7 @@ import BlogHeader from "@/components/Blog/BlogHeader";
 import SuccessMessage from "@/components/Blog/SuccessMessage";
 import BlogForm from "@/components/Blog/BlogForm";
 import BlogList from "@/components/Blog/BlogList";
+import { TBlog } from "@/types";
 
 interface Blog {
   id: string;
@@ -19,8 +20,13 @@ interface Blog {
   readTime: string;
 }
 
-export default function Blogs() {
-  const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
+type TProps = {
+  blogs: TBlog[];
+};
+
+export default function Blogs({ blogs }: TProps) {
+  return <h1>dd</h1>;
+  //   const [blogs, setBlogs] = useState<Blog[]>(initialBlogs);
   const [isAddingBlog, setIsAddingBlog] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [expandedBlog, setExpandedBlog] = useState<string | null>(null);

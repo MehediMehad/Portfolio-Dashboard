@@ -1,0 +1,81 @@
+"use server";
+import { revalidateTag } from "next/cache";
+import { cookies } from "next/headers";
+
+export const createBlog = async (formData: FormData): Promise<any> => {
+  try {
+    const token = (await cookies()).get("accessToken")?.value;
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blogs`, {
+      method: "POST",
+      body: formData,
+      headers: {
+        Authorization: token || "",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to create blog");
+    }
+
+    revalidateTag("blog");
+    return await res.json();
+  } catch (error: any) {
+    console.error("Create blog error:", error.message);
+    return { error: error.message };
+  }
+};
+
+export const getAllBlogs = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) {
+    return { error: "No access token found" };
+  }
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/get-my-blogs`,
+      {
+        headers: {
+          Authorization: token,
+        },
+        next: { tags: ["blog"] },
+      }
+    );
+
+    if (!res.ok) {
+      throw new Error("You are not authorized!");
+    }
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("Blog fetch error:", error.message);
+    return { error: error.message };
+  }
+};
+
+export const deleteBlog = async (blogId: string) => {
+  try {
+    const token = (await cookies()).get("accessToken")?.value;
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/${blogId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: token || "",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Failed to delete blog");
+    }
+    revalidateTag("blog");
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("Delete skill error:", error.message);
+    return { error: error.message };
+  }
+};

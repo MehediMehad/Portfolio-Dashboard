@@ -3,3 +3,4 @@ export * from "./myInfo";
 export * from "./skill";
 export * from "./socialMedia";
 export * from "./projects";
+export * from "./blogs";

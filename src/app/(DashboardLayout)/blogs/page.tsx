@@ -1,9 +1,13 @@
+import { getAllBlogs } from "@/actions/blogs";
 import Blogs from "@/components/Blog/Blog";
 
-const BlogPage = () => {
+const BlogPage = async () => {
+  const data = await getAllBlogs();
+  console.log(data?.data);
+
   return (
     <div>
-      <Blogs />
+      <Blogs blogs={data?.data} />
     </div>
   );
 };
