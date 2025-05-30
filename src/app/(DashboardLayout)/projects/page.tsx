@@ -3,7 +3,6 @@ import Project from "@/components/Project/Project";
 
 const ProjectsPage = async () => {
   const data = await getAllProjects();
-  console.log(data.data);
 
   return (
     <div>

@@ -86,12 +86,11 @@ export const updateProject = async (
   }
 };
 
-// Skill deleted
-export const deleteProject = async (skillId: string) => {
+export const deleteProject = async (projectId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/project/${skillId}`,
+      `${process.env.NEXT_PUBLIC_BASE_API}/projects/${projectId}`,
       {
         method: "DELETE",
         headers: {
@@ -100,10 +99,9 @@ export const deleteProject = async (skillId: string) => {
       }
     );
     if (!res.ok) {
-      throw new Error("Failed to delete skill");
+      throw new Error("Failed to delete project");
     }
-
-    revalidateTag("user-profile");
+    revalidateTag("project");
 
     return await res.json();
   } catch (error: any) {
