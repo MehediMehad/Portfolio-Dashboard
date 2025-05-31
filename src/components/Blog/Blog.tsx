@@ -12,7 +12,7 @@ export interface TBlog {
   id: string;
   title: string;
   overview: string;
-  image: string;
+  image: string; // Always a string, use "" for no image
   content: string;
   tags: string[];
   is_public: boolean;
@@ -22,9 +22,7 @@ export interface TBlog {
   updatedAt: string;
   authorId: string;
   author: Author;
-  excerpt: string;
   date: string;
-  readTime: string;
 }
 
 export interface Author {
@@ -33,26 +31,26 @@ export interface Author {
   profilePhoto: string;
 }
 
-type TProps = {
+interface Props {
   blogs: TBlog[];
-};
+}
 
-export default function Blogs({ blogs }: TProps) {
+export default function Blogs({ blogs }: Props) {
   const { user } = useUser();
-  const userId = user?.userId;
+  const userId = user?.userId || "";
   const [blogList, setBlogs] = useState<TBlog[]>(blogs);
-  const editorRef = useRef<any>(null);
   const [isAddingBlog, setIsAddingBlog] = useState(false);
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
-  const [expandedBlog, setExpandedBlog] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [newBlog, setNewBlog] = useState<TBlog>({
+  const editorRef = useRef<any>(null);
+  const [expandedBlog, setExpandedBlog] = useState<string | null>(null);
+
+  const initialBlog: TBlog = {
     id: "",
     title: "",
     overview: "",
-    image: "/placeholder.svg?height=600&width=1200",
+    image: "",
     content: "",
     tags: [""],
     is_public: false,
@@ -60,117 +58,75 @@ export default function Blogs({ blogs }: TProps) {
     isDeleted: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
-    authorId: "",
+    authorId: userId,
     author: {
-      id: "",
-      name: "",
-      profilePhoto: "",
+      id: userId,
+      name: user?.name || "Anonymous",
+      profilePhoto: "/placeholder.svg?height=100&width=100",
     },
-    excerpt: "",
     date: new Date().toISOString(),
-    readTime: "0 min read",
-  });
+  };
+
+  const [newBlog, setNewBlog] = useState<TBlog>(initialBlog);
 
   const handleAddBlog = () => {
-    setIsAddingBlog(true);
-    setImageFile(null); // Reset imageFile for new blog
     setNewBlog({
+      ...initialBlog,
       id: `blog-${Date.now()}`,
-      title: "",
-      overview: "",
-      content: "",
-      author: {
-        id: userId || "",
-        name: user?.name || "Mehad Khan",
-        profilePhoto: "/placeholder.svg?height=100&width=100",
-      },
-      tags: [""],
-      image: "/placeholder.svg?height=600&width=1200",
-      is_public: false,
-      isFeatured: false,
-      isDeleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      authorId: userId || "",
-      excerpt: "",
-      date: new Date().toISOString(),
-      readTime: "0 min read",
     });
+    setIsAddingBlog(true);
+    setEditingBlogId(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleCancelEdit = () => {
-    setIsAddingBlog(false);
-    setEditingBlogId(null);
-    setImageFile(null); // Reset imageFile
+  const handleEditBlog = (blogId: string) => {
+    const blog = blogList.find((b) => b.id === blogId);
+    if (!blog) {
+      alert("Blog not found");
+      return;
+    }
     setNewBlog({
-      id: "",
-      title: "",
-      overview: "",
-      image: "/placeholder.svg?height=600&width=1200",
-      content: "",
-      tags: [""],
-      is_public: false,
-      isFeatured: false,
-      isDeleted: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      authorId: "",
-      author: {
-        id: "",
-        name: "",
-        profilePhoto: "",
-      },
-      excerpt: "",
-      date: new Date().toISOString(),
-      readTime: "0 min read",
+      ...blog,
+      tags: blog.tags.length ? blog.tags : [""],
     });
+    setEditingBlogId(blogId);
+    setIsAddingBlog(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleInputChange = (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | { target: { name: string; value: any } }
-  ) => {
-    const { name, value } = e.target;
+  const handleCancel = () => {
+    setIsAddingBlog(false);
+    setEditingBlogId(null);
+    setNewBlog(initialBlog);
+  };
+
+  const handleChange = (name: string, value: any) => {
     setNewBlog((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "author" ? value : value,
     }));
   };
 
-  const handleEditorChange = () => {
-    if (editorRef.current) {
-      const content = editorRef.current.getContent();
-      setNewBlog((prev) => ({
-        ...prev,
-        content,
-      }));
-    }
+  const handleEditorChange = (content: string) => {
+    setNewBlog((prev) => ({ ...prev, content }));
   };
 
   const handleTagChange = (index: number, value: string) => {
     setNewBlog((prev) => {
-      const newTags = [...prev.tags];
-      newTags[index] = value;
-      return { ...prev, tags: newTags };
+      const tags = [...prev.tags];
+      tags[index] = value;
+      return { ...prev, tags };
     });
   };
 
   const handleAddTag = () => {
-    setNewBlog((prev) => ({
-      ...prev,
-      tags: [...prev.tags, ""],
-    }));
+    setNewBlog((prev) => ({ ...prev, tags: [...prev.tags, ""] }));
   };
 
   const handleRemoveTag = (index: number) => {
     setNewBlog((prev) => {
-      const newTags = [...prev.tags];
-      newTags.splice(index, 1);
-      return { ...prev, tags: newTags };
+      const tags = prev.tags.filter((_, i) => i !== index);
+      return { ...prev, tags: tags.length ? tags : [""] };
     });
   };
 
@@ -185,145 +141,81 @@ export default function Blogs({ blogs }: TProps) {
     setIsLoading(true);
     try {
       // Validate required fields
-      if (!newBlog.title?.trim()) {
-        throw new Error("Blog title is required");
-      }
-      if (!newBlog.overview?.trim()) {
+      if (!newBlog.title.trim()) throw new Error("Blog title is required");
+      if (!newBlog.overview.trim())
         throw new Error("Blog overview is required");
-      }
-      if (!newBlog.content?.trim()) {
-        throw new Error("Blog content is required");
-      }
+      if (!newBlog.content.trim()) throw new Error("Blog content is required");
 
-      // Prepare modified data for FormData
-      const modifiedData = {
-        title: newBlog.title,
-        overview: newBlog.overview,
-        content: newBlog.content,
-        tags: newBlog.tags.filter((tag) => tag.trim() !== ""),
-        is_public: newBlog.is_public,
-        isFeatured: newBlog.isFeatured,
-      };
-
-      // Create FormData for API request
       const formData = new FormData();
-      formData.append("data", JSON.stringify(modifiedData));
-      if (imageFile) {
-        formData.append("file", imageFile);
+      formData.append(
+        "data",
+        JSON.stringify({
+          title: newBlog.title,
+          overview: newBlog.overview,
+          content: newBlog.content,
+          tags: newBlog.tags.filter((tag) => tag.trim()),
+          is_public: newBlog.is_public,
+          isFeatured: newBlog.isFeatured,
+          authorId: userId,
+          author: newBlog.author,
+        })
+      );
+      if ((newBlog.image as any) instanceof File) {
+        formData.append("file", newBlog.image);
       } else if (typeof newBlog.image === "string" && newBlog.image) {
-        formData.append("imageUrl", newBlog.image); // Send existing image URL if no new file
+        formData.append("imageUrl", newBlog.image);
       }
 
-      let response;
-      if (editingBlogId) {
-        response = await updateBlog(editingBlogId, formData);
-      } else {
-        response = await createBlog(formData);
-      }
+      const response = editingBlogId
+        ? await updateBlog(editingBlogId, formData)
+        : await createBlog(formData);
 
-      // Handle API response
-      if (response.error) {
-        throw new Error(response.error);
-      }
+      if (response.error) throw new Error(response.error);
 
       const updatedBlog: TBlog = {
         ...response,
-        id:
-          editingBlogId ||
-          response.id ||
-          newBlog.title
-            .toLowerCase()
-            .replace(/[^\w\s]/gi, "")
-            .replace(/\s+/g, "-"),
+        id: editingBlogId || response.id || `blog-${Date.now()}`,
+        image: response.image || newBlog.image || "",
         readTime: calculateReadTime(newBlog.content),
         excerpt: newBlog.overview || newBlog.content.slice(0, 120),
-        date: newBlog.createdAt,
-        authorId: userId || "",
+        date: new Date().toISOString(),
+        authorId: userId,
         author: {
-          id: userId || "",
-          name: newBlog.author.name || user?.name || "Mehad Khan",
+          id: userId,
+          name: newBlog.author.name || user?.name || "Anonymous",
           profilePhoto:
             newBlog.author.profilePhoto ||
             "/placeholder.svg?height=100&width=100",
         },
-        image:
-          response.image || // Use backend-provided image URL if available
-          (typeof newBlog.image === "string"
-            ? newBlog.image
-            : "/placeholder.svg?height=600&width=1200"),
       };
 
-      if (editingBlogId) {
-        setBlogs((prev: TBlog[]) =>
-          prev.map((blog) => (blog.id === editingBlogId ? updatedBlog : blog))
-        );
-        setSuccessMessage("Blog post updated successfully!");
-      } else {
-        setBlogs((prev: TBlog[]) => [updatedBlog, ...prev]);
-        setSuccessMessage("Blog post created successfully!");
-      }
-
-      // Reset form
-      handleCancelEdit();
-      setImageFile(null); // Reset imageFile after saving
+      setBlogs((prev) =>
+        editingBlogId
+          ? prev.map((blog) => (blog.id === editingBlogId ? updatedBlog : blog))
+          : [updatedBlog, ...prev]
+      );
+      setSuccessMessage(editingBlogId ? "Blog updated!" : "Blog created!");
+      handleCancel();
     } catch (error: any) {
-      console.error("Error saving blog:", error);
-      alert(`Failed to save blog post: ${error.message}`);
+      alert(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
       setTimeout(() => setSuccessMessage(""), 3000);
     }
-  };
-
-  const handleEditBlog = (blogId: string) => {
-    const blogToEdit = blogList.find((blog) => blog.id === blogId);
-    if (!blogToEdit) {
-      alert("Blog not found");
-      return;
-    }
-
-    setNewBlog({
-      ...blogToEdit,
-      tags: blogToEdit.tags.length ? blogToEdit.tags : [""],
-      author: {
-        id: blogToEdit.authorId,
-        name: blogToEdit.author.name || user?.name || "Mehad Khan",
-        profilePhoto:
-          blogToEdit.author.profilePhoto ||
-          "/placeholder.svg?height=100&width=100",
-      },
-    });
-    setImageFile(null); // Reset imageFile when editing
-    setEditingBlogId(blogId);
-    setIsAddingBlog(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDeleteBlog = async (blogId: string) => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this blog post? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
+    if (!confirm("Are you sure you want to delete this blog post?")) return;
     setIsLoading(true);
-
     try {
-      setBlogs((prev: TBlog[]) => prev.filter((blog) => blog.id !== blogId));
-      setSuccessMessage("Blog post deleted successfully!");
+      setBlogs((prev) => prev.filter((blog) => blog.id !== blogId));
+      setSuccessMessage("Blog deleted!");
     } catch (error) {
-      console.error("Error deleting blog:", error);
-      alert("Failed to delete blog post. Please try again.");
+      alert("Failed to delete blog post.");
     } finally {
       setIsLoading(false);
       setTimeout(() => setSuccessMessage(""), 3000);
     }
-  };
-
-  const toggleBlogExpansion = (blogId: string) => {
-    setExpandedBlog((prev) => (prev === blogId ? null : blogId));
   };
 
   return (
@@ -340,40 +232,29 @@ export default function Blogs({ blogs }: TProps) {
       )}
       {(isAddingBlog || editingBlogId) && (
         <BlogForm
-          blog={{
-            ...newBlog,
-            author: {
-              id: newBlog.author.id || newBlog.authorId || "",
-              name: newBlog.author.name,
-              profilePhoto:
-                newBlog.author.profilePhoto ||
-                "/placeholder.svg?height=100&width=100",
-            },
-            is_public: newBlog.is_public,
-            isFeatured: newBlog.isFeatured,
-          }}
-          onChange={handleInputChange}
+          blog={newBlog}
+          onChange={handleChange}
           onEditorChange={handleEditorChange}
           onTagChange={handleTagChange}
           onAddTag={handleAddTag}
           onRemoveTag={handleRemoveTag}
           onSave={handleSaveBlog}
-          onCancel={handleCancelEdit}
+          onCancel={handleCancel}
           isLoading={isLoading}
           isEditing={!!editingBlogId}
           editorRef={editorRef}
-          imageFile={imageFile}
-          setImageFile={setImageFile}
         />
       )}
       <BlogList
         blogs={blogList}
         isLoading={isLoading && !isAddingBlog && !editingBlogId}
-        expandedBlog={expandedBlog}
         onAddBlog={handleAddBlog}
         onEditBlog={handleEditBlog}
         onDeleteBlog={handleDeleteBlog}
-        onToggleBlogExpansion={toggleBlogExpansion}
+        onToggleBlogExpansion={(blogId) =>
+          setExpandedBlog((prev) => (prev === blogId ? null : blogId))
+        }
+        expandedBlog={expandedBlog}
       />
     </div>
   );

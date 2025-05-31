@@ -8,7 +8,7 @@ interface Blog {
   id: string;
   title: string;
   overview: string;
-  image: string | File; // Image can be a URL (string) or a File
+  image: string | File | null; // Allow null for no image
   content: string;
   tags: string[];
   is_public: boolean;
@@ -18,14 +18,8 @@ interface Blog {
 
 interface BlogFormProps {
   blog: Blog;
-  onChange: (
-    e:
-      | React.ChangeEvent<
-          HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
-      | { target: { name: string; value: any } }
-  ) => void;
-  onEditorChange: () => void;
+  onChange: (name: string, value: any) => void;
+  onEditorChange: (content: string) => void;
   onTagChange: (index: number, value: string) => void;
   onAddTag: () => void;
   onRemoveTag: (index: number) => void;
@@ -34,8 +28,6 @@ interface BlogFormProps {
   isLoading: boolean;
   isEditing: boolean;
   editorRef: React.MutableRefObject<any>;
-  imageFile: File | null;
-  setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
 }
 
 export default function BlogForm({
@@ -50,66 +42,29 @@ export default function BlogForm({
   isLoading,
   isEditing,
   editorRef,
-  imageFile,
-  setImageFile,
 }: BlogFormProps) {
   const TINYMCE_API_KEY = process.env.NEXT_PUBLIC_TINYMCE_API_KEY;
-
-  // Handle nested author updates
-  const handleAuthorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    onChange({
-      target: {
-        name: "author",
-        value: { ...blog.author, name: value },
-      },
-    });
-  };
 
   // Handle file input for image
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImageFile(file); // Update imageFile state
-      onChange({
-        target: {
-          name: "image",
-          value: file, // Update blog.image with the File object
-        },
-      });
+      onChange("image", e.target.files[0]);
     }
   };
 
   // Handle image removal
   const handleRemoveImage = () => {
-    setImageFile(null); // Clear imageFile state
-    onChange({
-      target: {
-        name: "image",
-        value: "", // Reset to empty string
-      },
-    });
+    onChange("image", null);
   };
 
-  // Handle boolean fields (is_public, isFeatured)
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    onChange({
-      target: {
-        name,
-        value: checked,
-      },
-    });
-  };
-
-  // Cleanup object URLs to prevent memory leaks
+  // Cleanup object URLs
   useEffect(() => {
     return () => {
-      if (imageFile) {
-        URL.revokeObjectURL(URL.createObjectURL(imageFile));
+      if (blog.image instanceof File) {
+        URL.revokeObjectURL(URL.createObjectURL(blog.image));
       }
     };
-  }, [imageFile]);
+  }, [blog.image]);
 
   return (
     <div className="bg-[#120b20] border border-[#2d1b4d] rounded-lg p-6 mb-8">
@@ -126,7 +81,7 @@ export default function BlogForm({
           id="title"
           name="title"
           value={blog.title}
-          onChange={onChange}
+          onChange={(e) => onChange("title", e.target.value)}
           className="w-full bg-[#1a1025] border border-[#2d1b4d] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors"
           required
         />
@@ -140,8 +95,8 @@ export default function BlogForm({
           id="overview"
           name="overview"
           value={blog.overview}
-          onChange={onChange}
-          rows={2}
+          onChange={(e) => onChange("overview", e.target.value)}
+          rows={4}
           className="w-full bg-[#1a1025] border border-[#2d1b4d] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors resize-none"
           required
           placeholder="A brief summary of your blog post"
@@ -176,12 +131,10 @@ export default function BlogForm({
                   font-size: 16px;
                   color: #f8f8f8;
                   background-color: #1a1025;
-                  direction: ltr;
                 }
               `,
               skin: "oxide-dark",
               content_css: "dark",
-              directionality: "ltr",
             }}
           />
         </div>
@@ -194,9 +147,10 @@ export default function BlogForm({
         <input
           type="text"
           id="author"
-          name="author.name"
           value={blog.author.name}
-          onChange={handleAuthorChange}
+          onChange={(e) =>
+            onChange("author", { ...blog.author, name: e.target.value })
+          }
           className="w-full bg-[#1a1025] border border-[#2d1b4d] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors"
         />
       </div>
@@ -213,23 +167,21 @@ export default function BlogForm({
 
       <div className="mb-6">
         <label htmlFor="blogImage" className="block text-gray-400 mb-2">
-          Project Image
+          Blog Image
         </label>
         <div className="flex items-start gap-4">
           <div className="relative w-32 h-24 bg-[#1a1025] border border-[#2d1b4d] rounded-lg overflow-hidden">
             <Image
               src={
-                imageFile
-                  ? URL.createObjectURL(imageFile)
-                  : typeof blog.image === "string"
-                  ? blog.image || "/placeholder.svg"
-                  : "/placeholder.svg"
+                blog.image instanceof File
+                  ? URL.createObjectURL(blog.image)
+                  : blog.image || "/placeholder.svg"
               }
-              alt="blog preview"
+              alt="Blog preview"
               fill
               className="object-cover"
             />
-            {imageFile || (typeof blog.image === "string" && blog.image) ? (
+            {blog.image && (
               <button
                 onClick={handleRemoveImage}
                 className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
@@ -237,7 +189,7 @@ export default function BlogForm({
               >
                 <X className="w-4 h-4" />
               </button>
-            ) : null}
+            )}
           </div>
           <div className="flex-1">
             <input
@@ -255,30 +207,26 @@ export default function BlogForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div>
-          <label className="flex items-center text-gray-400">
-            <input
-              type="checkbox"
-              name="is_public"
-              checked={blog.is_public}
-              onChange={handleCheckboxChange}
-              className="mr-2 h-4 w-4 text-[#a855f7] focus:ring-[#a855f7] border-[#2d1b4d] rounded"
-            />
-            Public
-          </label>
-        </div>
-        <div>
-          <label className="flex items-center text-gray-400">
-            <input
-              type="checkbox"
-              name="isFeatured"
-              checked={blog.isFeatured}
-              onChange={handleCheckboxChange}
-              className="mr-2 h-4 w-4 text-[#a855f7] focus:ring-[#a855f7] border-[#2d1b4d] rounded"
-            />
-            Featured
-          </label>
-        </div>
+        <label className="flex items-center text-gray-400">
+          <input
+            type="checkbox"
+            name="is_public"
+            checked={blog.is_public}
+            onChange={(e) => onChange("is_public", e.target.checked)}
+            className="mr-2 h-4 w-4 text-[#a855f7] focus:ring-[#a855f7] border-[#2d1b4d] rounded"
+          />
+          Public
+        </label>
+        <label className="flex items-center text-gray-400">
+          <input
+            type="checkbox"
+            name="isFeatured"
+            checked={blog.isFeatured}
+            onChange={(e) => onChange("isFeatured", e.target.checked)}
+            className="mr-2 h-4 w-4 text-[#a855f7] focus:ring-[#a855f7] border-[#2d1b4d] rounded"
+          />
+          Featured
+        </label>
       </div>
 
       <div className="flex justify-end gap-3">
@@ -293,14 +241,14 @@ export default function BlogForm({
           type="button"
           onClick={onSave}
           disabled={isLoading}
-          className="flex items-center gap-2 bg-[#a855f7] hover:bg-[#9333ea] text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center gap-2 bg-[#a855f7] hover:bg-[#9333ea] text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
         >
           {isLoading ? (
             <RefreshCw className="w-4 h-4 animate-spin" />
           ) : (
             <Save className="w-4 h-4" />
           )}
-          {isLoading ? "Saving..." : "Save Blog Post"}
+          {isLoading ? "Saving..." : "Save"}
         </button>
       </div>
     </div>
