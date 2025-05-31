@@ -3,6 +3,8 @@ import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
 export const createBlog = async (formData: FormData): Promise<any> => {
+  console.log("formData", formData);
+
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
@@ -22,6 +24,31 @@ export const createBlog = async (formData: FormData): Promise<any> => {
     return await res.json();
   } catch (error: any) {
     console.error("Create blog error:", error.message);
+    return { error: error.message };
+  }
+};
+
+export const updateBlog = async (editingBlog: string, blogData: FormData) => {
+  try {
+    const token = (await cookies()).get("accessToken")?.value;
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blog`, {
+      method: "PATCH",
+      body: editingBlog,
+      headers: {
+        Authorization: token || "",
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to update blog");
+    }
+
+    revalidateTag("blog");
+
+    return await res.json();
+  } catch (error: any) {
+    console.error("Update blog error:", error.message);
     return { error: error.message };
   }
 };
