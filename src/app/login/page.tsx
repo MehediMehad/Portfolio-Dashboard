@@ -39,7 +39,7 @@ export default function LoginPage() {
       if (res?.success) {
         toast.success(res.message);
         if (redirect) {
-          router.push(redirect);
+          router.push("/");
         } else {
           router.push("/");
         }
