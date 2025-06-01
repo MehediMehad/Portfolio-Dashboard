@@ -94,8 +94,7 @@ export default function Dashboard({
   // Image upload state
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
-    myInfo.profilePhoto ||
-      "https://res.cloudinary.com/dxbpbbpbh/image/upload/v1748022227/photo_2024-08-15_01-36-46-1748022223354-26234766.jpg"
+    myInfo?.profilePhoto
   );
 
   // File input reference

@@ -19,6 +19,7 @@ export default function AddSocialLinkModal({
   onAdd,
 }: AddSocialLinkModalProps) {
   const [platformName, setPlatformName] = useState("");
+  const platformNameSelectRef = useRef<HTMLSelectElement>(null);
   const [socialUrl, setSocialUrl] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export default function AddSocialLinkModal({
       setImagePreview(null);
       setErrors({ name: "", url: "", form: "" });
       setTimeout(() => {
-        platformNameInputRef.current?.focus();
+        platformNameSelectRef.current?.focus();
       }, 100);
     }
   }, [isOpen]);
@@ -184,7 +185,7 @@ export default function AddSocialLinkModal({
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
-            {/* Platform Name */}
+            {/* Platform Name Dropdown */}
             <div>
               <label
                 htmlFor="modal-social-name"
@@ -192,10 +193,9 @@ export default function AddSocialLinkModal({
               >
                 Platform Name <span className="text-red-500">*</span>
               </label>
-              <input
-                ref={platformNameInputRef}
+              <select
+                ref={platformNameSelectRef}
                 id="modal-social-name"
-                type="text"
                 value={platformName}
                 onChange={(e) => {
                   setPlatformName(e.target.value);
@@ -204,8 +204,16 @@ export default function AddSocialLinkModal({
                 className={`w-full bg-[#1a1025] border ${
                   errors.name ? "border-red-500" : "border-[#2d1b4d]"
                 } rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors`}
-                placeholder="e.g., LinkedIn, Twitter"
-              />
+              >
+                <option value="" disabled>
+                  Select a platform
+                </option>
+                {socialPlatforms.map((platform) => (
+                  <option key={platform.value} value={platform.value}>
+                    {platform.label}
+                  </option>
+                ))}
+              </select>
               {errors.name && (
                 <p className="mt-1 text-red-500 text-sm">{errors.name}</p>
               )}
@@ -339,7 +347,7 @@ export default function AddSocialLinkModal({
               className="flex items-center gap-2 bg-[#a855f7] hover:bg-[#9333ea] text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus size={16} />
-              Add Social Link
+              {isLoading ? "Adding Social Link" : "Add Social Link"}
             </button>
           </div>
         </form>
@@ -347,3 +355,13 @@ export default function AddSocialLinkModal({
     </div>
   );
 }
+
+// Define available social media platforms
+const socialPlatforms = [
+  { value: "LinkedIn", label: "LinkedIn" },
+  { value: "Twitter", label: "Twitter" },
+  { value: "Facebook", label: "Facebook" },
+  { value: "Instagram", label: "Instagram" },
+  { value: "GitHub", label: "GitHub" },
+  { value: "YouTube", label: "YouTube" },
+];
