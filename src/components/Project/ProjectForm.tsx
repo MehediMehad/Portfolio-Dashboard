@@ -5,6 +5,21 @@ import Image from "next/image";
 import { Plus, Save, Trash2, RefreshCw, X } from "lucide-react";
 import { TProject } from "@/types";
 
+// Define available technologies
+const techOptions = [
+  { value: "Tailwind CSS", label: "Tailwind CSS" },
+  { value: "React", label: "React" },
+  { value: "JavaScript", label: "JavaScript" },
+  { value: "TypeScript", label: "TypeScript" },
+  { value: "Node.js", label: "Node.js" },
+  { value: "Express.js", label: "Express.js" },
+  { value: "Prisma", label: "Prisma" },
+  { value: "MongoDB", label: "MongoDB" },
+  { value: "Mongoose", label: "Mongoose" },
+  { value: "MySQL", label: "MySQL" },
+  { value: "Python", label: "Python" },
+];
+
 type ProjectFormProps = {
   newProject: Partial<TProject>;
   setNewProject: React.Dispatch<React.SetStateAction<Partial<TProject>>>;
@@ -198,15 +213,22 @@ export default function ProjectForm({
         </div>
         {(newProject.techStack || []).map((tech: string, index: number) => (
           <div key={index} className="flex items-center gap-2 mb-2">
-            <input
-              type="text"
+            <select
               value={tech}
               onChange={(e) =>
                 handleArrayInputChange("techStack", index, e.target.value)
               }
               className="flex-1 bg-[#1a1025] border border-[#2d1b4d] rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#a855f7] transition-colors"
-              placeholder="e.g., React, TypeScript, Tailwind CSS"
-            />
+            >
+              <option value="" disabled>
+                Select a technology
+              </option>
+              {techOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
             <button
               type="button"
               onClick={() => handleRemoveArrayItem("techStack", index)}
