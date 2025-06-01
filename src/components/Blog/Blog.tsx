@@ -7,6 +7,7 @@ import BlogForm from "@/components/Blog/BlogForm";
 import BlogList from "@/components/Blog/BlogList";
 import { useUser } from "@/context/UserContext";
 import { createBlog, updateBlog } from "@/actions/blogs";
+import { toast } from "sonner";
 
 export interface TBlog {
   id: string;
@@ -53,7 +54,7 @@ export default function Blogs({ blogs }: Props) {
     image: "",
     content: "",
     tags: [""],
-    is_public: false,
+    is_public: true,
     isFeatured: false,
     isDeleted: false,
     createdAt: new Date().toISOString(),
@@ -129,22 +130,17 @@ export default function Blogs({ blogs }: Props) {
       return { ...prev, tags: tags.length ? tags : [""] };
     });
   };
-
-  const calculateReadTime = (content: string) => {
-    const wordsPerMinute = 200;
-    const wordCount = content.split(/\s+/).length;
-    const readTime = Math.ceil(wordCount / wordsPerMinute);
-    return `${readTime} min read`;
-  };
-
+  // 1000, 'Content must be at least 1000 characters long
   const handleSaveBlog = async () => {
     setIsLoading(true);
     try {
       // Validate required fields
       if (!newBlog.title.trim()) throw new Error("Blog title is required");
+      if (!newBlog.image) throw new Error("Image is required");
       if (!newBlog.overview.trim())
         throw new Error("Blog overview is required");
-      if (!newBlog.content.trim()) throw new Error("Blog content is required");
+      if (!newBlog.content.trim() || newBlog.content.length < 1000)
+        throw new Error("Blog content must be at least 1000 characters long");
 
       const formData = new FormData();
       formData.append(
@@ -167,25 +163,20 @@ export default function Blogs({ blogs }: Props) {
       }
 
       const response = editingBlogId
-        ? await updateBlog(editingBlogId, formData)
+        ? await updateBlog(formData, editingBlogId)
         : await createBlog(formData);
 
       if (response.error) throw new Error(response.error);
 
       const updatedBlog: TBlog = {
         ...response,
-        id: editingBlogId || response.id || `blog-${Date.now()}`,
-        image: response.image || newBlog.image || "",
-        readTime: calculateReadTime(newBlog.content),
-        excerpt: newBlog.overview || newBlog.content.slice(0, 120),
+        image: response.image || newBlog.image,
         date: new Date().toISOString(),
         authorId: userId,
         author: {
           id: userId,
-          name: newBlog.author.name || user?.name || "Anonymous",
-          profilePhoto:
-            newBlog.author.profilePhoto ||
-            "/placeholder.svg?height=100&width=100",
+          name: newBlog.author.name || user?.name,
+          profilePhoto: newBlog.author.profilePhoto,
         },
       };
 
@@ -194,10 +185,14 @@ export default function Blogs({ blogs }: Props) {
           ? prev.map((blog) => (blog.id === editingBlogId ? updatedBlog : blog))
           : [updatedBlog, ...prev]
       );
-      setSuccessMessage(editingBlogId ? "Blog updated!" : "Blog created!");
+      setSuccessMessage(
+        editingBlogId
+          ? "Blog updated successfully!"
+          : "Blog created successfully!"
+      );
       handleCancel();
     } catch (error: any) {
-      alert(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`);
     } finally {
       setIsLoading(false);
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -209,9 +204,9 @@ export default function Blogs({ blogs }: Props) {
     setIsLoading(true);
     try {
       setBlogs((prev) => prev.filter((blog) => blog.id !== blogId));
-      setSuccessMessage("Blog deleted!");
+      setSuccessMessage("Blog Deleted successfully!");
     } catch (error) {
-      alert("Failed to delete blog post.");
+      toast.error("Failed to delete blog post.");
     } finally {
       setIsLoading(false);
       setTimeout(() => setSuccessMessage(""), 3000);

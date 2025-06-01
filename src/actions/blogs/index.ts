@@ -28,24 +28,25 @@ export const createBlog = async (formData: FormData): Promise<any> => {
   }
 };
 
-export const updateBlog = async (editingBlog: string, blogData: FormData) => {
+export const updateBlog = async (blogData: FormData, blogId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blog`, {
-      method: "PATCH",
-      body: editingBlog,
-      headers: {
-        Authorization: token || "",
-      },
-    });
-
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/update-blog/${blogId}`,
+      {
+        method: "PATCH",
+        body: blogData,
+        headers: {
+          Authorization: token || "",
+        },
+      }
+    );
     if (!res.ok) {
       throw new Error("Failed to update blog");
     }
 
     revalidateTag("blog");
-
     return await res.json();
   } catch (error: any) {
     console.error("Update blog error:", error.message);
@@ -68,14 +69,14 @@ export const getAllBlogs = async () => {
         headers: {
           Authorization: token,
         },
-        next: { tags: ["blog"] },
+        next: {
+          tags: ["blog"],
+        },
       }
     );
-
     if (!res.ok) {
       throw new Error("You are not authorized!");
     }
-
     return await res.json();
   } catch (error: any) {
     console.error("Blog fetch error:", error.message);
