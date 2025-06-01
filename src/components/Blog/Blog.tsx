@@ -6,8 +6,9 @@ import SuccessMessage from "@/components/Blog/SuccessMessage";
 import BlogForm from "@/components/Blog/BlogForm";
 import BlogList from "@/components/Blog/BlogList";
 import { useUser } from "@/context/UserContext";
-import { createBlog, updateBlog } from "@/actions/blogs";
+import { createBlog, deleteBlog, updateBlog } from "@/actions/blogs";
 import { toast } from "sonner";
+import DeleteConfirmationModal from "../Dashboard/delete-confirmation-modal";
 
 export interface TBlog {
   id: string;
@@ -46,6 +47,8 @@ export default function Blogs({ blogs }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const editorRef = useRef<any>(null);
   const [expandedBlog, setExpandedBlog] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // Modal state
+  const [blogToDelete, setBlogToDelete] = useState<string | null>(null); // Track blog ID to delete
 
   const initialBlog: TBlog = {
     id: "",
@@ -130,7 +133,7 @@ export default function Blogs({ blogs }: Props) {
       return { ...prev, tags: tags.length ? tags : [""] };
     });
   };
-  // 1000, 'Content must be at least 1000 characters long
+
   const handleSaveBlog = async () => {
     setIsLoading(true);
     try {
@@ -199,16 +202,24 @@ export default function Blogs({ blogs }: Props) {
     }
   };
 
-  const handleDeleteBlog = async (blogId: string) => {
-    if (!confirm("Are you sure you want to delete this blog post?")) return;
+  const handleDeleteBlog = (blogId: string) => {
+    setBlogToDelete(blogId); // Set the blog ID to delete
+    setIsDeleteModalOpen(true); // Open the modal
+  };
+
+  const confirmDeleteBlog = async () => {
+    if (!blogToDelete) return;
     setIsLoading(true);
     try {
-      setBlogs((prev) => prev.filter((blog) => blog.id !== blogId));
-      setSuccessMessage("Blog Deleted successfully!");
+      await deleteBlog(blogToDelete);
+      setBlogs((prev) => prev.filter((blog) => blog.id !== blogToDelete));
+      setSuccessMessage("Blog deleted successfully!");
     } catch (error) {
-      toast.error("Failed to delete blog post.");
+      alert("Failed to delete blog post.");
     } finally {
       setIsLoading(false);
+      setBlogToDelete(null);
+      setIsDeleteModalOpen(false);
       setTimeout(() => setSuccessMessage(""), 3000);
     }
   };
@@ -240,6 +251,18 @@ export default function Blogs({ blogs }: Props) {
           editorRef={editorRef}
         />
       )}
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setBlogToDelete(null);
+        }}
+        onConfirm={confirmDeleteBlog}
+        title="Delete Blog Post"
+        message="Are you sure you want to delete this blog post?"
+        itemName={blogList.find((blog) => blog.id === blogToDelete)?.title}
+      />
+
       <BlogList
         blogs={blogList}
         isLoading={isLoading && !isAddingBlog && !editingBlogId}
