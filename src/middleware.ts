@@ -68,10 +68,9 @@ export const middleware = async (request: NextRequest) => {
 export const config = {
   matcher: [
     "/",
-    "/login",
-    "/register",
-    "/no-routes-for-user",
-    "/no-routes-for-admin",
+    "/projects",
+    "/blogs",
+    "/messages",
     "/users",
     "/success", // superadmin এর জন্য রিডাইরেক্ট টেস্ট করার জন্য
   ],
