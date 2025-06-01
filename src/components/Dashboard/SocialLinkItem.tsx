@@ -24,22 +24,12 @@ export default function SocialLinkItem({
   url,
   icon,
   onDelete,
-  onUpdate,
 }: SocialLinkItemProps) {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing] = useState(false);
   const [socialPlatform, setSocialPlatform] = useState(platformName);
   const [socialUrl, setSocialUrl] = useState(url);
   const [socialIcon, setSocialIcon] = useState(icon);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
-  const handleSave = () => {
-    onUpdate(id, {
-      platformName: socialPlatform,
-      url: socialUrl,
-      icon: socialIcon,
-    });
-    setIsEditing(false);
-  };
 
   // Handle delete confirmation
   const handleDeleteConfirm = async () => {

@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Plus, Save, Trash2, Upload, RefreshCw, X } from "lucide-react";
+import { Plus, Save, Trash2, RefreshCw, X } from "lucide-react";
 import { TProject } from "@/types";
 
 type ProjectFormProps = {
@@ -37,9 +37,7 @@ type ProjectFormProps = {
 export default function ProjectForm({
   newProject,
   setNewProject,
-  imageFile,
   setImageFile,
-  isAddingProject,
   editingProjectId,
   isLoading,
   errorMessage,

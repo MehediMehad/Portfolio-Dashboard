@@ -33,6 +33,7 @@ export default function AddSkillItem({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(icon || null);
   const fileIconRef = useRef<HTMLInputElement>(null);
+  console.log(imageFile);
 
   useEffect(() => {
     setMounted(true);

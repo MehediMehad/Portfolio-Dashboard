@@ -21,6 +21,7 @@ export default function AddSkillModal({
   const [skillName, setSkillName] = useState("");
   const [skillLevel, setSkillLevel] = useState("Beginner");
   const [skillIcon, setSkillIcon] = useState("");
+  console.log(skillIcon);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState({ name: "", form: "" });

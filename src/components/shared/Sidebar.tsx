@@ -25,7 +25,7 @@ import {
 const Sidebar = () => {
   const path = usePathname();
 
-  const { user, setIsLoading } = useUser();
+  const { setIsLoading } = useUser();
 
   const router = useRouter();
   const pathname = usePathname();

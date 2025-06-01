@@ -214,8 +214,8 @@ export default function Blogs({ blogs }: Props) {
       await deleteBlog(blogToDelete);
       setBlogs((prev) => prev.filter((blog) => blog.id !== blogToDelete));
       setSuccessMessage("Blog deleted successfully!");
-    } catch (error) {
-      alert("Failed to delete blog post.");
+    } catch (error: any) {
+      toast.error(`Failed to delete blog post. ${error.message}`);
     } finally {
       setIsLoading(false);
       setBlogToDelete(null);

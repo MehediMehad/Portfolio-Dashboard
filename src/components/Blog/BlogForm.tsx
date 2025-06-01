@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Editor } from "@tinymce/tinymce-react";
 import TagInput from "./TagInput";
 import { RefreshCw, Save, X } from "lucide-react";

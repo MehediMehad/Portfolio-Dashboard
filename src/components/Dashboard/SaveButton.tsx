@@ -8,7 +8,6 @@ type SaveButtonProps = {
 
 export default function SaveButton({
   isLoading,
-  isSaved,
   handleSaveChanges,
 }: SaveButtonProps) {
   return (
