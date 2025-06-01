@@ -110,7 +110,7 @@ export default function BlogForm({
         <div className="min-h-[400px] border border-[#2d1b4d] rounded-lg overflow-hidden">
           <Editor
             apiKey={TINYMCE_API_KEY}
-            onInit={(evt, editor) => (editorRef.current = editor)}
+            onInit={(_, editor) => (editorRef.current = editor)}
             initialValue={blog.content}
             onEditorChange={onEditorChange}
             init={{

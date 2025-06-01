@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getMyInfo } from "@/actions/MyInfo";
 import { getAllSkills } from "@/actions/Skils";
 import { getAllSocialMedias } from "@/actions/SocialMedia";
