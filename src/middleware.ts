@@ -11,7 +11,9 @@ const userRoutes = [
 ];
 
 const adminRoutes = [
-  "/", // admin রোলের জন্য
+  "/blogs", // admin রোলের জন্য
+  "/messages",
+  "projects",
 ];
 
 const superadminRoutes = [
@@ -48,7 +50,7 @@ export const middleware = async (request: NextRequest) => {
       return NextResponse.next();
     } else {
       return NextResponse.redirect(
-        new URL(`${FRONTENDURL}/login?redirectPath=${pathname}`, request.url)
+        new URL(`${FRONTENDURL}/login`, request.url)
       );
     }
   }
