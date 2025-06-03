@@ -6,7 +6,7 @@ import {
   Briefcase,
   BookOpen,
   Mail,
-  Settings,
+  // Settings,
   LogOut,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -37,7 +37,7 @@ const Sidebar = () => {
     <>
       <aside className="w-64 bg-[#120b20] border-r border-[#2d1b4d] hidden max-h-screen sticky top-0 md:block">
         <div className="p-6">
-          <Link href="/" className="flex items-center gap-2 text-[#a855f7]">
+          {/* <Link href="/" className="flex items-center gap-2 text-[#a855f7]">
             <svg
               width="30"
               height="30"
@@ -68,6 +68,23 @@ const Sidebar = () => {
               />
             </svg>
             <span className="font-bold text-lg">Portfolio Admin</span>
+          </Link> */}
+          <Link href="/" className="flex items-center gap-2 text-[#a855f7]">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 120 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 80V20H20L40 60L60 20H70L90 60L110 20H120V80H110V40L90 80H80L60 40L40 80H30L10 40V80H10Z"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
         </div>
 
@@ -124,7 +141,7 @@ const Sidebar = () => {
             <p className="text-gray-400 text-xs uppercase font-medium">Other</p>
           </div>
 
-          <Link
+          {/* <Link
             href="/settings"
             className={`flex items-center gap-3 px-6 py-3 hover:bg-[#1a1025] transition-colors ${
               path === "/settings" &&
@@ -133,7 +150,7 @@ const Sidebar = () => {
           >
             <Settings size={18} />
             <span className="text-gray-400 hover:text-white">Settings</span>
-          </Link>
+          </Link> */}
 
           <Link
             href="/"

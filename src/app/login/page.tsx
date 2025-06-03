@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         {/* Logo and heading */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-block mb-4">
+          {/* <Link href="/" className="inline-block mb-4">
             <div className="flex items-center justify-center">
               <div className="bg-[#a855f7] p-3 rounded-xl">
                 <svg
@@ -96,6 +96,23 @@ export default function LoginPage() {
                 </svg>
               </div>
             </div>
+          </Link> */}
+          <Link href="/" className="text-textPrimary">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 120 100"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 80V20H20L40 60L60 20H70L90 60L110 20H120V80H110V40L90 80H80L60 40L40 80H30L10 40V80H10Z"
+                stroke="currentColor"
+                strokeWidth="6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </Link>
           <h1 className="text-white text-2xl font-bold">Welcome Back</h1>
           <p className="text-gray-400 mt-2">Sign in to access your dashboard</p>
