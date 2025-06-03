@@ -153,7 +153,8 @@ const Sidebar = () => {
           </Link> */}
 
           <Link
-            href="/"
+            href="/https://mehedimehad.vercel.app/"
+            target="_blank"
             className="flex items-center gap-3 px-6 py-3 hover:bg-[#1a1025] transition-colors"
           >
             <Home size={18} />
