@@ -55,12 +55,12 @@ export const getCurrentUser = async () => {
 
   if (accessToken) {
     decodedData = await jwtDecode(accessToken);
+
     return decodedData;
   } else {
     return null;
   }
 };
-
 
 export const logout = async () => {
   (await cookies()).delete("accessToken");

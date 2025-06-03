@@ -6,22 +6,12 @@ type Role = keyof typeof roleBasedPrivateRoutes;
 
 const authRoutes = ["/login", "/register"]; // 🌎 Public Access
 
-const userRoutes = [
-  "/", // user রোলের জন্য
-];
+const userRoutes = ["/"];
 
-const adminRoutes = [
-  "/blogs", // admin রোলের জন্য
-  "/messages",
-  "projects",
-];
+const adminRoutes = ["/", "/blogs", "/messages", "/projects"];
 
-const superadminRoutes = [
-  "/", // হোমপেজ superadmin রোলের জন্য
-  "/users",
-];
+const superadminRoutes = ["/", "/users"];
 
-// রেগুলার এক্সপ্রেশন তৈরির ফাংশন
 const createRoutePattern = (route: string): RegExp => {
   if (route === "/") {
     return /^\/$/;
@@ -32,7 +22,6 @@ const createRoutePattern = (route: string): RegExp => {
   return new RegExp(`^${route}$`);
 };
 
-// ডায়নামিকভাবে roleBasedPrivateRoutes তৈরি
 const roleBasedPrivateRoutes = {
   user: userRoutes.map((route) => createRoutePattern(route)),
   admin: adminRoutes.map((route) => createRoutePattern(route)),
@@ -41,10 +30,9 @@ const roleBasedPrivateRoutes = {
 
 export const middleware = async (request: NextRequest) => {
   const { pathname } = request.nextUrl;
-  const userInfo = await getCurrentUser(); // 👤 Current User Info
+  const userInfo = await getCurrentUser();
   const normalizedRole = userInfo?.role.toLowerCase() as Role;
 
-  // লগইন না থাকলে
   if (!userInfo) {
     if (authRoutes.includes(pathname)) {
       return NextResponse.next();
@@ -55,7 +43,6 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
-  // লগইন থাকলে রোল চেক
   if (normalizedRole && roleBasedPrivateRoutes[normalizedRole]) {
     const routes = roleBasedPrivateRoutes[normalizedRole];
     if (routes.some((route) => pathname.match(route))) {
@@ -63,17 +50,9 @@ export const middleware = async (request: NextRequest) => {
     }
   }
 
-  // অননুমোদিত পেজে গেলে লগইন পেজে রিডাইরেক্ট
   return NextResponse.redirect(new URL("/login", request.url));
 };
 
 export const config = {
-  matcher: [
-    "/",
-    "/projects",
-    "/blogs",
-    "/messages",
-    "/users",
-    "/success", // superadmin এর জন্য রিডাইরেক্ট টেস্ট করার জন্য
-  ],
+  matcher: ["/", "/projects", "/blogs", "/messages", "/users", "/success"],
 };
