@@ -59,81 +59,45 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#0f0a1a] flex flex-col justify-center items-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Logo and heading */}
-        <div className="text-center mb-8">
-          {/* <Link href="/" className="inline-block mb-4">
-            <div className="flex items-center justify-center">
-              <div className="bg-[#a855f7] p-3 rounded-xl">
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="text-white"
-                >
-                  <path
-                    d="M12 2L2 7L12 12L22 7L12 2Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 17L12 22L22 17"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M2 12L12 17L22 12"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-          </Link> */}
-          <Link href="/" className="text-textPrimary">
-            <svg
-              width="48"
-              height="48"
-              viewBox="0 0 120 100"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M10 80V20H20L40 60L60 20H70L90 60L110 20H120V80H110V40L90 80H80L60 40L40 80H30L10 40V80H10Z"
-                stroke="currentColor"
-                strokeWidth="6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
-          <h1 className="text-white text-2xl font-bold">Welcome Back</h1>
-          <p className="text-gray-400 mt-2">Sign in to access your dashboard</p>
-        </div>
-
         {/* Login form */}
         <div className="bg-[#120b20] border border-[#2d1b4d] rounded-lg p-6">
-          {error && (
-            <div className="mb-6 p-4 bg-red-900/20 border border-red-500 text-red-400 rounded-lg text-sm">
-              {error}
+          {/* Logo and heading */}
+          <div className="flex flex-col text-center mb-8 items-center justify-center">
+            <Link href="/" className="text-textPrimary">
+              <svg
+                width="48"
+                height="48"
+                viewBox="0 0 120 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 80V20H20L40 60L60 20H70L90 60L110 20H120V80H110V40L90 80H80L60 40L40 80H30L10 40V80H10Z"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+            <div className="">
+              <h1 className="text-white text-2xl font-bold">Welcome Back</h1>
+              <p className="text-gray-400 mt-2">
+                Sign in to access your dashboard
+              </p>
             </div>
-          )}
-
+          </div>
           <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Email Address */}
             <div className="mb-6">
+              {/* label */}
               <label
                 htmlFor="email"
                 className="block text-gray-300 mb-2 text-sm font-medium"
               >
                 Email Address
               </label>
+              {/* input */}
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                 <input
@@ -145,14 +109,16 @@ export default function LoginPage() {
                   disabled={isSubmitting}
                 />
               </div>
+              {/* error */}
               {form.formState.errors.email && (
                 <p className="mt-1 text-red-400 text-sm">
                   {form.formState.errors.email.message as string}
                 </p>
               )}
             </div>
-
+            {/* Password */}
             <div className="mb-6">
+              {/* label */}
               <div className="flex justify-between items-center mb-2">
                 <label
                   htmlFor="password"
@@ -160,6 +126,7 @@ export default function LoginPage() {
                 >
                   Password
                 </label>
+                {/* Forgot password Page */}
                 <Link
                   href="/forgot-password"
                   className="text-[#a855f7] text-sm hover:text-[#c084fc] transition-colors"
@@ -167,6 +134,7 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
+              {/* input */}
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 h-5 w-5" />
                 <input
@@ -190,14 +158,16 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              {/* error */}
               {form.formState.errors.password && (
                 <p className="mt-1 text-red-400 text-sm">
                   {form.formState.errors.password.message as string}
                 </p>
               )}
             </div>
-            {/* 
-            <div className="flex items-center mb-6">
+
+            {/* REMEMBER ME */}
+            {/* <div className="flex items-center mb-6">
               <input
                 id="remember-me"
                 type="checkbox"
@@ -213,6 +183,14 @@ export default function LoginPage() {
               </label>
             </div> */}
 
+            {/* ERROR MESSAGE */}
+            {error && (
+              <div className="mb-6 p-4 bg-red-900/20 border border-red-500 text-red-400 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            {/* SIGN IN BUTTON */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -228,25 +206,6 @@ export default function LoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-400 text-sm">
-              Don&apos;t have an account?{" "}
-              <Link
-                href="/register"
-                className="text-[#a855f7] hover:text-[#c084fc] transition-colors"
-              >
-                Create account
-              </Link>
-            </p>
-          </div>
-        </div>
-
-        {/* Demo credentials */}
-        <div className="mt-6 text-center">
-          <p className="text-gray-500 text-xs">
-            Demo credentials: admin@example.com / password
-          </p>
         </div>
       </div>
     </div>
