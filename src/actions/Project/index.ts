@@ -1,4 +1,5 @@
 "use server";
+import { BASEURL } from "@/lib/URL";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -6,7 +7,7 @@ export const createProject = async (formData: FormData): Promise<any> => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/projects`, {
+    const res = await fetch(`${BASEURL}/projects`, {
       method: "POST",
       body: formData,
       headers: {
@@ -31,7 +32,7 @@ export const getAllProjects = async () => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/projects/get-my-project`,
+      `${BASEURL}/projects/get-my-project`,
       {
         headers: {
           Authorization: token || "",
@@ -63,7 +64,7 @@ export const updateProject = async (
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/project`, {
+    const res = await fetch(`${BASEURL}/project`, {
       method: "PATCH",
       body: skillData,
       headers: {
@@ -88,7 +89,7 @@ export const deleteProject = async (projectId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/projects/${projectId}`,
+      `${BASEURL}/projects/${projectId}`,
       {
         method: "DELETE",
         headers: {

@@ -1,4 +1,5 @@
 "use server";
+import { BASEURL } from "@/lib/URL";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -10,7 +11,7 @@ export const createSocialMedia = async (
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/social-media`,
+      `${BASEURL}/social-media`,
       {
         method: "POST",
         body: socialMediaData,
@@ -38,7 +39,7 @@ export const getAllSocialMedias = async () => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/social-media/get-all-my-social-medias`,
+      `${BASEURL}/social-media/get-all-my-social-medias`,
       {
         headers: {
           Authorization: token || "",
@@ -66,7 +67,7 @@ export const updateSocialMedia = async (socialMediaData: FormData) => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/social-media`,
+      `${BASEURL}/social-media`,
       {
         method: "PATCH",
         body: socialMediaData,
@@ -94,7 +95,7 @@ export const deleteSocialMedia = async (socialMediaId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/social-media/${socialMediaId}`,
+      `${BASEURL}/social-media/${socialMediaId}`,
       {
         method: "DELETE",
         headers: {

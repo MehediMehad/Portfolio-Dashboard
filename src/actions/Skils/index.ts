@@ -1,4 +1,5 @@
 "use server";
+import { BASEURL } from "@/lib/URL";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -8,7 +9,7 @@ export const createSkill = async (skillData: FormData): Promise<any> => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/skill`, {
+    const res = await fetch(`${BASEURL}/skill`, {
       method: "POST",
       body: skillData,
       headers: {
@@ -34,7 +35,7 @@ export const getAllSkills = async () => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/skill/get-my-skills`,
+      `${BASEURL}/skill/get-my-skills`,
       {
         headers: {
           Authorization: token || "",
@@ -61,7 +62,7 @@ export const updateSkill = async (skillData: FormData) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/skill`, {
+    const res = await fetch(`${BASEURL}/skill`, {
       method: "PATCH",
       body: skillData,
       headers: {
@@ -87,7 +88,7 @@ export const deleteSkill = async (skillId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/skill/${skillId}`,
+      `${BASEURL}/skill/${skillId}`,
       {
         method: "DELETE",
         headers: {

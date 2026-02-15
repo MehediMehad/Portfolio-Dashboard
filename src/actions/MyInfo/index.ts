@@ -1,4 +1,5 @@
 "use server";
+import { BASEURL } from "@/lib/URL";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -7,7 +8,7 @@ export const updateProfile = async (userData: FormData): Promise<any> => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/user/update-profile`,
+      `${BASEURL}/user/update-profile`,
       {
         method: "PUT",
         body: userData,
@@ -33,7 +34,7 @@ export const updateProfile = async (userData: FormData): Promise<any> => {
 //  get all brands
 export const getMyInfo = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/user/me`, {
+    const res = await fetch(`${BASEURL}/user/me`, {
       next: {
         tags: ["MYINFO"],
       },

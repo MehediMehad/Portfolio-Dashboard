@@ -35,6 +35,7 @@ export default function LoginPage() {
       setError(null);
       setIsLoading(true);
       const res = await loginUser(data);
+      console.log(".........", res);
 
       if (res?.success) {
         toast.success(res.message);

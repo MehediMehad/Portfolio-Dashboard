@@ -1,4 +1,5 @@
 "use server";
+import { BASEURL } from "@/lib/URL";
 import { revalidateTag } from "next/cache";
 import { cookies } from "next/headers";
 
@@ -8,7 +9,7 @@ export const createBlog = async (formData: FormData): Promise<any> => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_API}/blogs`, {
+    const res = await fetch(`${BASEURL}/blogs`, {
       method: "POST",
       body: formData,
       headers: {
@@ -33,7 +34,7 @@ export const updateBlog = async (blogData: FormData, blogId: string) => {
     const token = (await cookies()).get("accessToken")?.value;
 
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/update-blog/${blogId}`,
+      `${BASEURL}/blogs/update-blog/${blogId}`,
       {
         method: "PATCH",
         body: blogData,
@@ -64,7 +65,7 @@ export const getAllBlogs = async () => {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/get-my-blogs`,
+      `${BASEURL}/blogs/get-my-blogs`,
       {
         headers: {
           Authorization: token,
@@ -88,7 +89,7 @@ export const deleteBlog = async (blogId: string) => {
   try {
     const token = (await cookies()).get("accessToken")?.value;
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_API}/blogs/${blogId}`,
+      `${BASEURL}/blogs/${blogId}`,
       {
         method: "DELETE",
         headers: {
