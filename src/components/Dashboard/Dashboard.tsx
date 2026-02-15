@@ -2,7 +2,7 @@
 
 import ProfileImage from "./ProfileImage";
 import BasicInfoForm from "./BasicInfoForm";
-import SkillsSection from "./SkillsSection";
+// import SkillsSection from "./SkillsSection";
 import SocialLinksSection from "./SocialLinksSection";
 import SaveButton from "./SaveButton";
 import AboutMeSection from "./AboutMe";
@@ -19,7 +19,7 @@ type TDashboardprops = {
 
 export default function Dashboard({
   myInfo,
-  skillData,
+  // skillData,
   socialMediaData,
 }: TDashboardprops) {
   // Profile state
@@ -33,35 +33,35 @@ export default function Dashboard({
     profilePhoto: myInfo.profilePhoto || "",
   });
 
-  // Skills state
-  const [skills, setSkills] = useState(
-    skillData || [
-      {
-        id: "1",
-        name: "Tailwind CSS",
-        level: "Expert",
-        icon: "/icons/tailwind.svg",
-      },
-      {
-        id: "2",
-        name: "JavaScript",
-        level: "Expert",
-        icon: "/icons/javascript.svg",
-      },
-      {
-        id: "3",
-        name: "React",
-        level: "Intermediate",
-        icon: "/icons/react.svg",
-      },
-      {
-        id: "4",
-        name: "Node.js",
-        level: "Beginner",
-        icon: "/icons/nodejs.svg",
-      },
-    ]
-  );
+  // // Skills state
+  // const [skills, setSkills] = useState(
+  //   skillData || [
+  //     {
+  //       id: "1",
+  //       name: "Tailwind CSS",
+  //       level: "Expert",
+  //       icon: "/icons/tailwind.svg",
+  //     },
+  //     {
+  //       id: "2",
+  //       name: "JavaScript",
+  //       level: "Expert",
+  //       icon: "/icons/javascript.svg",
+  //     },
+  //     {
+  //       id: "3",
+  //       name: "React",
+  //       level: "Intermediate",
+  //       icon: "/icons/react.svg",
+  //     },
+  //     {
+  //       id: "4",
+  //       name: "Node.js",
+  //       level: "Beginner",
+  //       icon: "/icons/nodejs.svg",
+  //     },
+  //   ]
+  // );
 
   // Social links state
   const [socialLinks, setSocialLinks] = useState(
@@ -84,7 +84,7 @@ export default function Dashboard({
         url: "https://twitter.com/username  ",
         icon: "/icons/twitter.svg",
       },
-    ]
+    ],
   );
 
   // Form state
@@ -94,17 +94,17 @@ export default function Dashboard({
   // Image upload state
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>(
-    myInfo?.profilePhoto
+    myInfo?.profilePhoto,
   );
 
   // File input reference
   const fileInputRef = useRef<HTMLInputElement>(
-    null
+    null,
   ) as React.RefObject<HTMLInputElement>;
 
   // Handle profile changes
   const handleProfileChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setProfile((prev) => ({
@@ -127,37 +127,37 @@ export default function Dashboard({
     fileInputRef.current?.click();
   };
 
-  // Handle skill deletion
-  const handleDeleteSkill = (id: string) => {
-    setSkills((prev) => prev.filter((skill) => skill.id !== id));
-  };
+  // // Handle skill deletion
+  // const handleDeleteSkill = (id: string) => {
+  //   setSkills((prev) => prev.filter((skill) => skill.id !== id));
+  // };
 
-  // Handle skill update
-  const handleUpdateSkill = (
-    id: string,
-    data: { name: string; level: string; icon: string }
-  ) => {
-    setSkills((prev) =>
-      prev.map((skill) => {
-        if (skill.id === id) {
-          return { ...skill, ...data };
-        }
-        return skill;
-      })
-    );
-  };
+  // // Handle skill update
+  // const handleUpdateSkill = (
+  //   id: string,
+  //   data: { name: string; level: string; icon: string }
+  // ) => {
+  //   setSkills((prev) =>
+  //     prev.map((skill) => {
+  //       if (skill.id === id) {
+  //         return { ...skill, ...data };
+  //       }
+  //       return skill;
+  //     })
+  //   );
+  // };
 
-  // Add new skill
-  const handleAddSkill = () => {
-    const newSkill = {
-      name: "New Skill",
-      level: "Beginner",
-      icon: "",
-      isNew: true,
-    };
+  // // Add new skill
+  // const handleAddSkill = () => {
+  //   const newSkill = {
+  //     name: "New Skill",
+  //     level: "Beginner",
+  //     icon: "",
+  //     isNew: true,
+  //   };
 
-    setSkills((prev) => [...prev, newSkill]);
-  };
+  //   setSkills((prev) => [...prev, newSkill]);
+  // };
 
   // Handle social link deletion
   const handleDeleteSocialLink = (id: string) => {
@@ -167,7 +167,7 @@ export default function Dashboard({
   // Handle social link update
   const handleUpdateSocialLink = (
     id: string,
-    data: { platformName: string; url: string; icon: string }
+    data: { platformName: string; url: string; icon: string },
   ) => {
     setSocialLinks((prev) =>
       prev.map((link) => {
@@ -175,7 +175,7 @@ export default function Dashboard({
           return { ...link, ...data };
         }
         return link;
-      })
+      }),
     );
   };
 
@@ -288,13 +288,13 @@ export default function Dashboard({
         />
       </div>
 
-      <SkillsSection
+      {/* <SkillsSection
         setSkills={setSkills}
         skills={skills}
         handleAddSkill={handleAddSkill}
         handleDeleteSkill={handleDeleteSkill}
         handleUpdateSkill={handleUpdateSkill}
-      />
+      /> */}
 
       <SocialLinksSection
         socialLinks={socialLinks}

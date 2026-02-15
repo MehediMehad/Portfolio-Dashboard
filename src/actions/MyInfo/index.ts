@@ -13,13 +13,14 @@ export const updateProfile = async (userData: FormData): Promise<any> => {
         method: "PUT",
         body: userData,
         headers: {
-          Authorization: token || "",
-        },
+          Authorization: `${token}`,
+        }
       }
     );
 
     if (!res.ok) {
-      throw new Error("Failed to update profile");
+      const errorData = await res.json();
+      throw new Error(errorData.message || "Failed to update profile");
     }
 
     revalidateTag("user-profile");
